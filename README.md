@@ -1,1 +1,2 @@
-# BlogApiEndpoints-with-PHP-Symfony
+# TechsphereApi
+A rest api built with php 8 
