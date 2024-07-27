@@ -2,7 +2,7 @@ FROM php:8.2-fpm
 
 # Install system dependencies and Composer
 RUN apt-get update && \
-    apt-get install -y libzip-dev libpq-dev libicu-dev curl unzip && \
+    apt-get install -y libzip-dev libpq-dev libicu-dev curl unzip ca-certificates && \
     docker-php-ext-configure zip && \
     docker-php-ext-install -j$(nproc) zip pdo_pgsql intl && \
     pecl install redis && docker-php-ext-enable redis && \
