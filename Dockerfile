@@ -22,8 +22,13 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-interaction --no-scripts --prefer-dist
 
-# Copy the rest of the application files
+# Copy application files including .env
 COPY . .
+
+# Ensure the var directory and its subdirectories are writable
+RUN mkdir -p /app/var/cache /app/var/log && \
+    chown -R www-data:www-data /app/var && \
+    chmod -R 755 /app/var
 
 # Expose port 8000
 EXPOSE 8000
