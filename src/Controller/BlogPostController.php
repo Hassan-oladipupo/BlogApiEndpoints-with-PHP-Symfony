@@ -7,6 +7,7 @@ use App\Entity\BlogPost;
 use Psr\Log\LoggerInterface;
 use App\Repository\CommentRepository;
 use App\Repository\BlogPostRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Routing\Annotation\Route;
@@ -210,6 +211,34 @@ class BlogPostController extends AbstractController
 
 
             return $this->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/api/blog-post/{id}', name: 'app_blog_post_delete', methods: ['DELETE'])]
+    public function deleteBlogPost(int $id, BlogPostRepository $repo, ManagerRegistry $doctrine, LoggerInterface $logger, Security $security): JsonResponse
+    {
+        $entityManager = $doctrine->getManager();
+        $currentUser = $security->getUser();
+
+        try {
+            $blogPost = $repo->find($id);
+
+            if (!$blogPost) {
+                return new JsonResponse(['message' => 'Blog post not found'], 404);
+            }
+
+            if ($blogPost->getAuthor() !== $currentUser) {
+                return $this->json(['message' => 'You do not have permission to delete this blog post.'], 403);
+            }
+
+            $entityManager->remove($blogPost);
+            $entityManager->flush();
+
+            return new JsonResponse(['message' => 'Blog post deleted successfully'], 200);
+        } catch (\Exception $e) {
+            $logger->error('An error occurred: ' . $e->getMessage());
+
+            return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 }
