@@ -12,17 +12,19 @@ RUN  php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/composer
 
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
-    && apt-get install -y symfony-cli
+    && apt-get install -y symfony-clia
 
 WORKDIR /app/
 
-COPY composer.json /app/
-RUN composer install --no-interaction --no-scripts
+# Copy composer files and install PHP dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-interaction --no-scripts --prefer-dist
 
-COPY . /app/
+# Copy the rest of the application files
+COPY . .
 
-# Expose the port your Symfony app will run on
+# Expose port 8000
 EXPOSE 8000
 
-# Start the server using the Symfony Runtime
+# Start the Symfony server
 CMD ["symfony", "server:start", "--no-tls", "--port=8000", "--dir=public"]
