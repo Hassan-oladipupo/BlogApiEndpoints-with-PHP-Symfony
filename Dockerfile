@@ -25,6 +25,9 @@ RUN composer install --no-interaction --no-scripts --prefer-dist
 # Copy application files including .env
 COPY . .
 
+# Create and set permissions for the uploads directory
+RUN mkdir -p /app/public/uploads/profiles && chown -R www-data:www-data /app/public/uploads
+
 # Ensure the var directory and its subdirectories are writable
 RUN mkdir -p /app/var/cache /app/var/log && \
     chown -R www-data:www-data /app/var && \
