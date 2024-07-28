@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
-    <parameter key="kernel.project_dir">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony</parameter>
+    <parameter key="kernel.project_dir">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony</parameter>
     <parameter key="kernel.environment">dev</parameter>
     <parameter key="kernel.runtime_environment">%env(default:kernel.environment:APP_RUNTIME_ENV)%</parameter>
     <parameter key="kernel.debug">true</parameter>
-    <parameter key="kernel.build_dir">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</parameter>
-    <parameter key="kernel.cache_dir">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</parameter>
-    <parameter key="kernel.logs_dir">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\log</parameter>
+    <parameter key="kernel.build_dir">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</parameter>
+    <parameter key="kernel.cache_dir">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</parameter>
+    <parameter key="kernel.logs_dir">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\log</parameter>
     <parameter key="kernel.bundles" type="collection">
       <parameter key="FrameworkBundle">Symfony\Bundle\FrameworkBundle\FrameworkBundle</parameter>
       <parameter key="DoctrineBundle">Doctrine\Bundle\DoctrineBundle\DoctrineBundle</parameter>
@@ -20,42 +20,42 @@
     </parameter>
     <parameter key="kernel.bundles_metadata" type="collection">
       <parameter key="FrameworkBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\framework-bundle</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\framework-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\FrameworkBundle</parameter>
       </parameter>
       <parameter key="DoctrineBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\doctrine\doctrine-bundle</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\doctrine\doctrine-bundle</parameter>
         <parameter key="namespace">Doctrine\Bundle\DoctrineBundle</parameter>
       </parameter>
       <parameter key="DoctrineMigrationsBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\doctrine\doctrine-migrations-bundle</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\doctrine\doctrine-migrations-bundle</parameter>
         <parameter key="namespace">Doctrine\Bundle\MigrationsBundle</parameter>
       </parameter>
       <parameter key="MakerBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\maker-bundle\src</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\maker-bundle\src</parameter>
         <parameter key="namespace">Symfony\Bundle\MakerBundle</parameter>
       </parameter>
       <parameter key="SensioFrameworkExtraBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\sensio\framework-extra-bundle\src</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\sensio\framework-extra-bundle\src</parameter>
         <parameter key="namespace">Sensio\Bundle\FrameworkExtraBundle</parameter>
       </parameter>
       <parameter key="SecurityBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\security-bundle</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\security-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\SecurityBundle</parameter>
       </parameter>
       <parameter key="MonologBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\monolog-bundle</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\symfony\monolog-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\MonologBundle</parameter>
       </parameter>
       <parameter key="LexikJWTAuthenticationBundle" type="collection">
-        <parameter key="path">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\vendor\lexik\jwt-authentication-bundle</parameter>
+        <parameter key="path">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\vendor\lexik\jwt-authentication-bundle</parameter>
         <parameter key="namespace">Lexik\Bundle\JWTAuthenticationBundle</parameter>
       </parameter>
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
     <parameter key="kernel.container_class">App_KernelDevDebugContainer</parameter>
     <parameter key="profiles">/uploads/profiles/</parameter>
-    <parameter key="profiles_directory">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony/public/uploads/profiles/</parameter>
+    <parameter key="profiles_directory">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony/public/uploads/profiles/</parameter>
     <parameter key="event_dispatcher.event_aliases" type="collection">
       <parameter key="Symfony\Component\Console\Event\ConsoleCommandEvent">console.command</parameter>
       <parameter key="Symfony\Component\Console\Event\ConsoleErrorEvent">console.error</parameter>
@@ -84,16 +84,16 @@
     <parameter key="kernel.error_controller">error_controller</parameter>
     <parameter key="debug.file_link_format">%env(default::SYMFONY_IDE)%</parameter>
     <parameter key="debug.error_handler.throw_at">-1</parameter>
-    <parameter key="debug.container.dump">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/App_KernelDevDebugContainer.xml</parameter>
+    <parameter key="debug.container.dump">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/App_KernelDevDebugContainer.xml</parameter>
     <parameter key="router.request_context.host">localhost</parameter>
     <parameter key="router.request_context.scheme">http</parameter>
     <parameter key="router.request_context.base_url"></parameter>
     <parameter key="router.resource">kernel::loadRoutes</parameter>
-    <parameter key="router.cache_dir">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</parameter>
+    <parameter key="router.cache_dir">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</parameter>
     <parameter key="request_listener.http_port">80</parameter>
     <parameter key="request_listener.https_port">443</parameter>
-    <parameter key="serializer.mapping.cache.file">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/serialization.php</parameter>
-    <parameter key="cache.prefix.seed">_C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony.App_KernelDevDebugContainer</parameter>
+    <parameter key="serializer.mapping.cache.file">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/serialization.php</parameter>
+    <parameter key="cache.prefix.seed">_C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony.App_KernelDevDebugContainer</parameter>
     <parameter key="session.metadata.storage_key">_sf2_meta</parameter>
     <parameter key="session.storage.options" type="collection">
       <parameter key="cache_limiter" type="string">0</parameter>
@@ -104,7 +104,7 @@
     </parameter>
     <parameter key="session.save_path">null</parameter>
     <parameter key="session.metadata.update_threshold">0</parameter>
-    <parameter key="validator.mapping.cache.file">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/validation.php</parameter>
+    <parameter key="validator.mapping.cache.file">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/validation.php</parameter>
     <parameter key="validator.translation_domain">validators</parameter>
     <parameter key="data_collector.templates" type="collection"/>
     <parameter key="doctrine.dbal.configuration.class">Doctrine\DBAL\Configuration</parameter>
@@ -171,7 +171,7 @@
     <parameter key="doctrine.orm.second_level_cache.regions_configuration.class">Doctrine\ORM\Cache\RegionsConfiguration</parameter>
     <parameter key="doctrine.orm.auto_generate_proxy_classes">true</parameter>
     <parameter key="doctrine.orm.enable_lazy_ghost_objects">true</parameter>
-    <parameter key="doctrine.orm.proxy_dir">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/doctrine/orm/Proxies</parameter>
+    <parameter key="doctrine.orm.proxy_dir">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/doctrine/orm/Proxies</parameter>
     <parameter key="doctrine.orm.proxy_namespace">Proxies</parameter>
     <parameter key="doctrine.migrations.preferred_em">null</parameter>
     <parameter key="doctrine.migrations.preferred_connection">null</parameter>
@@ -370,7 +370,7 @@
       </argument>
     </service>
     <service id="http_cache.store" class="Symfony\Component\HttpKernel\HttpCache\Store">
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/http_cache</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/http_cache</argument>
     </service>
     <service id="url_helper" class="Symfony\Component\HttpFoundation\UrlHelper">
       <argument type="service" id="request_stack"/>
@@ -380,7 +380,7 @@
       <tag name="container.no_preload"/>
       <argument type="tagged_iterator" tag="kernel.cache_warmer"/>
       <argument>true</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/App_KernelDevDebugContainerDeprecations.log</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/App_KernelDevDebugContainerDeprecations.log</argument>
     </service>
     <service id="cache_clearer" class="Symfony\Component\HttpKernel\CacheClearer\ChainCacheClearer">
       <argument type="tagged_iterator" tag="kernel.cache_clearer"/>
@@ -564,7 +564,7 @@
       </argument>
       <argument>UTF-8</argument>
       <argument type="service" id="debug.file_link_formatter" on-invalid="null"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony</argument>
       <argument type="service">
         <service>
           <argument type="service" id="request_stack"/>
@@ -597,7 +597,7 @@
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument type="service" id="filesystem"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony</argument>
       <call method="setName">
         <argument>assets:install</argument>
       </call>
@@ -777,7 +777,7 @@
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument>dev</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony</argument>
       <call method="setName">
         <argument>debug:dotenv</argument>
       </call>
@@ -916,9 +916,9 @@
     <service id="cache.app" class="Symfony\Component\Cache\Adapter\FilesystemAdapter" public="true">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>uLIyuj9p9T</argument>
+      <argument>2xTABoUDtT</argument>
       <argument>0</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/app</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
@@ -931,50 +931,50 @@
     <service id="cache.system" class="Symfony\Component\Cache\Adapter\AdapterInterface" public="true">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>ur--0Oq6kI</argument>
+      <argument>S0-O0K0If-</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.validator" class="Symfony\Component\Cache\Adapter\AdapterInterface">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>S6PZxH4wss</argument>
+      <argument>W+k740RFLR</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.serializer" class="Symfony\Component\Cache\Adapter\AdapterInterface">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>gKrADotgQT</argument>
+      <argument>-01XZa5c++</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.annotations" class="Symfony\Component\Cache\Adapter\AdapterInterface">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>hJc3K-Nvm1</argument>
+      <argument>S5DqcbsF8F</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.property_info" class="Symfony\Component\Cache\Adapter\AdapterInterface">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>PGqj30Cj1f</argument>
+      <argument>SOqNhUJKgO</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -984,7 +984,7 @@
       <argument></argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1003,7 +1003,7 @@
       <tag name="monolog.logger" channel="cache"/>
       <argument></argument>
       <argument>0</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/app</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
@@ -1615,7 +1615,7 @@
       <argument type="service" id=".service_locator.LFIBYeS.router.default"/>
       <argument>kernel::loadRoutes</argument>
       <argument type="collection">
-        <argument key="cache_dir">C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</argument>
+        <argument key="cache_dir">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev</argument>
         <argument key="debug">true</argument>
         <argument key="generator_class">Symfony\Component\Routing\Generator\CompiledUrlGenerator</argument>
         <argument key="generator_dumper_class">Symfony\Component\Routing\Generator\Dumper\CompiledUrlGeneratorDumper</argument>
@@ -1654,7 +1654,7 @@
       <argument type="service" id="request_stack"/>
       <argument type="service" id="router.request_context" on-invalid="ignore"/>
       <argument type="service" id="monolog.logger.request" on-invalid="ignore"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony</argument>
       <argument>true</argument>
     </service>
     <service id="Symfony\Bundle\FrameworkBundle\Controller\RedirectController" class="Symfony\Bundle\FrameworkBundle\Controller\RedirectController" public="true">
@@ -1697,13 +1697,13 @@
     <service id="annotations.cache_warmer" class="Symfony\Bundle\FrameworkBundle\CacheWarmer\AnnotationsCacheWarmer">
       <tag name="kernel.cache_warmer"/>
       <argument type="service" id="annotations.reader"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/annotations.php</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/annotations.php</argument>
       <argument>#^Symfony\\(?:Component\\HttpKernel\\|Bundle\\FrameworkBundle\\Controller\\(?!.*Controller$))#</argument>
       <argument>true</argument>
     </service>
     <service id="annotations.cache_adapter" class="Symfony\Component\Cache\Adapter\PhpArrayAdapter">
       <tag name="container.hot_path"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/annotations.php</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/annotations.php</argument>
       <argument type="service" id="cache.annotations"/>
       <factory class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" method="create"/>
     </service>
@@ -1716,7 +1716,7 @@
     </service>
     <service id="secrets.vault" class="Symfony\Bundle\FrameworkBundle\Secrets\SodiumVault">
       <tag name="container.env_var_loader"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony/config/secrets/%env(default:kernel.environment:APP_RUNTIME_ENV)%</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony/config/secrets/%env(default:kernel.environment:APP_RUNTIME_ENV)%</argument>
       <argument type="service" id="secrets.decryption_key" on-invalid="ignore"/>
     </service>
     <service id="secrets.decryption_key" class="Symfony\Component\String\LazyString">
@@ -1725,7 +1725,7 @@
       <factory class="Symfony\Component\String\LazyString" method="fromCallable"/>
     </service>
     <service id="secrets.local_vault" class="Symfony\Bundle\FrameworkBundle\Secrets\DotenvVault">
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony/.env.dev.local</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony/.env.dev.local</argument>
     </service>
     <service id="serializer" class="Symfony\Component\Serializer\Serializer">
       <argument type="collection">
@@ -1835,10 +1835,10 @@
           </service>
         </argument>
       </argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/serialization.php</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/serialization.php</argument>
     </service>
     <service id="serializer.mapping.cache.symfony" class="Psr\Cache\CacheItemPoolInterface">
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/serialization.php</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/serialization.php</argument>
       <argument type="service" id="cache.serializer"/>
       <factory class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" method="create"/>
     </service>
@@ -1959,7 +1959,7 @@
       <argument>true</argument>
     </service>
     <service id="session.storage.factory.mock_file" class="Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorageFactory">
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/sessions</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/sessions</argument>
       <argument>MOCKSESSID</argument>
       <argument type="service">
         <service class="Symfony\Component\HttpFoundation\Session\Storage\MetadataBag">
@@ -2043,10 +2043,10 @@
     <service id="validator.mapping.cache_warmer" class="Symfony\Bundle\FrameworkBundle\CacheWarmer\ValidatorCacheWarmer">
       <tag name="kernel.cache_warmer"/>
       <argument type="service" id="validator.builder"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/validation.php</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/validation.php</argument>
     </service>
     <service id="validator.mapping.cache.adapter" class="Symfony\Component\Cache\Adapter\PhpArrayAdapter">
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/validation.php</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/validation.php</argument>
       <argument type="service" id="cache.validator"/>
       <factory class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" method="create"/>
     </service>
@@ -2299,10 +2299,10 @@
     <service id="cache.validator_expression_language" class="Symfony\Component\Cache\Adapter\AdapterInterface" public="true">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>Q1uxMlCOLA</argument>
+      <argument>692yRAnXbC</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -2492,7 +2492,7 @@
       <argument type="service" id="doctrine.debug_data_holder"/>
       <argument type="service" id="debug.stopwatch" on-invalid="null"/>
     </service>
-    <service id=".1_ServiceLocator~1fbuN2h" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".1_ServiceLocator~UlpUb4Q" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <argument type="collection"/>
     </service>
     <service id="doctrine.orm.proxy_cache_warmer" class="Symfony\Bridge\Doctrine\CacheWarmer\ProxyCacheWarmer">
@@ -2696,7 +2696,7 @@
         <argument type="service" id=".doctrine.orm.default_metadata_driver"/>
       </call>
       <call method="setProxyDir">
-        <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/doctrine/orm/Proxies</argument>
+        <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/doctrine/orm/Proxies</argument>
       </call>
       <call method="setProxyNamespace">
         <argument>Proxies</argument>
@@ -2731,7 +2731,7 @@
     </service>
     <service id="doctrine.orm.default_attribute_metadata_driver" class="Doctrine\ORM\Mapping\Driver\AttributeDriver">
       <argument type="collection">
-        <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\src\Entity</argument>
+        <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\src\Entity</argument>
       </argument>
       <argument>true</argument>
     </service>
@@ -2796,7 +2796,7 @@
     <service id="doctrine.migrations.configuration" class="Doctrine\Migrations\Configuration\Configuration">
       <call method="addMigrationsDirectory">
         <argument>DoctrineMigrations</argument>
-        <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony/migrations</argument>
+        <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony/migrations</argument>
       </call>
       <call method="setAllOrNothing">
         <argument>false</argument>
@@ -2976,7 +2976,7 @@
       <argument type="service" id="filesystem"/>
       <argument type="service" id="maker.autoloader_util"/>
       <argument type="service" id="maker.file_link_formatter"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony</argument>
       <argument>null</argument>
     </service>
     <service id="maker.autoloader_finder" class="Symfony\Bundle\MakerBundle\Util\ComposerAutoloaderFinder">
@@ -3142,7 +3142,7 @@
     </service>
     <service id="maker.maker.make_migration" class="Symfony\Bundle\MakerBundle\Maker\MakeMigration">
       <tag name="maker.command"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony</argument>
       <argument type="service" id="maker.file_link_formatter"/>
     </service>
     <service id="maker.maker.make_stimulus_controller" class="Symfony\Bundle\MakerBundle\Maker\MakeStimulusController">
@@ -3340,10 +3340,10 @@
     <service id="cache.security_expression_language" class="Symfony\Component\Cache\Adapter\AdapterInterface">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>pseU1LnBAR</argument>
+      <argument>mR4uEiuMNl</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -3356,10 +3356,10 @@
     <service id="cache.security_is_granted_attribute_expression_language" class="Symfony\Component\Cache\Adapter\AdapterInterface" public="true">
       <tag name="cache.pool"/>
       <tag name="kernel.reset" method="reset"/>
-      <argument>i3JXtU4s2Z</argument>
+      <argument>Za2yPDkvTw</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -4247,7 +4247,7 @@
     <service id="monolog.processor.psr_log_message" class="Monolog\Processor\PsrLogMessageProcessor"/>
     <service id="monolog.handler.main" class="Monolog\Handler\StreamHandler">
       <tag name="kernel.reset" method="reset"/>
-      <argument>C:\Users\hp\BlogApiEndpoints-with-PHP-Symfony\var\log/dev.log</argument>
+      <argument>C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony\var\log/dev.log</argument>
       <argument>debug</argument>
       <argument>true</argument>
       <argument>null</argument>
@@ -4377,12 +4377,12 @@
     <service id="lexik_jwt_authentication.security.jwt_user_provider" class="Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserProvider">
       <argument></argument>
     </service>
-    <service id=".1_TokenStorage~JgJVPPY" class="Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage"/>
+    <service id=".1_TokenStorage~N9X3et2" class="Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage"/>
     <service id="lexik_jwt_authentication.security.guard.jwt_token_authenticator" class="Lexik\Bundle\JWTAuthenticationBundle\Security\Guard\JWTTokenAuthenticator">
       <argument type="service" id="lexik_jwt_authentication.jwt_manager"/>
       <argument type="service" id="debug.event_dispatcher"/>
       <argument type="service" id="lexik_jwt_authentication.extractor.chain_extractor"/>
-      <argument type="service" id=".1_TokenStorage~JgJVPPY"/>
+      <argument type="service" id=".1_TokenStorage~N9X3et2"/>
       <argument>null</argument>
       <deprecated package="lexik/jwt-authentication-bundle" version="2.7">The "%service_id%" service is deprecated and will be removed in 3.0, use the new "jwt" authenticator instead.</deprecated>
     </service>

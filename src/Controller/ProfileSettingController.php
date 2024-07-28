@@ -157,7 +157,6 @@ class ProfileSettingController extends AbstractController
 
 
     #[Route('/api/settings/profile-image', name: 'app_settings_profile_image', methods: ['POST'])]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function profileImage(Request $request, SluggerInterface $slugger, AppUserRepository $repo, LoggerInterface $logger, ValidatorInterface $validator): JsonResponse
     {
         $profileImageFile = $request->files->get('Image');

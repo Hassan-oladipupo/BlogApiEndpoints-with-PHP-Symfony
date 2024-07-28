@@ -16,7 +16,7 @@ return [
             [['_route' => 'app_get_user_profile', '_controller' => 'App\\Controller\\ProfileSettingController::retrieveUserProfile'], null, ['GET' => 0], null, false, false, null],
         ],
         '/api/setting-profile' => [[['_route' => 'app_update_user_profile', '_controller' => 'App\\Controller\\ProfileSettingController::updateUserProfile'], null, ['PUT' => 0], null, false, false, null]],
-        '/settings/profile-image' => [[['_route' => 'app_settings_profile_image', '_controller' => 'App\\Controller\\ProfileSettingController::profileImage'], null, ['POST' => 0], null, false, false, null]],
+        '/api/settings/profile-image' => [[['_route' => 'app_settings_profile_image', '_controller' => 'App\\Controller\\ProfileSettingController::profileImage'], null, ['POST' => 0], null, false, false, null]],
         '/api/register' => [[['_route' => 'api_register', '_controller' => 'App\\Controller\\UserController::register'], null, ['POST' => 0], null, false, false, null]],
         '/api/confirm-email' => [[['_route' => 'api_confirm_email', '_controller' => 'App\\Controller\\UserController::confirmEmail'], null, ['POST' => 0], null, false, false, null]],
         '/api/login' => [[['_route' => 'app_auth_login', '_controller' => 'App\\Controller\\UserController::login'], null, ['POST' => 0], null, false, false, null]],
