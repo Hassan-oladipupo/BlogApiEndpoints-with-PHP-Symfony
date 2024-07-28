@@ -169,7 +169,7 @@ class ProfileSettingController extends AbstractController
         $constraints = [
             new File([
                 'maxSize' => '1024k',
-                'mimeTypes' => ['image/jpeg', 'image/png'],
+                'mimeTypes' => ['image/jpeg', 'image/png', 'image/jpg'],
                 'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
             ]),
         ];
