@@ -153,8 +153,11 @@ class UserController extends AbstractController
             if (str_contains($error->getMessageKey(), 'Invalid credentials')) {
                 $errorMessage = 'Incorrect password.';
             }
-
-            return new JsonResponse(['error' => $errorMessage], 401);
+            //    return new JsonResponse(['error' => $errorMessage], 401);
+            return $this->json([
+                'message' => 'Invalid credentials',
+                'error' => $errorMessage,
+            ], 401);
         }
 
         $data = json_decode($request->getContent(), true);
