@@ -3,7 +3,7 @@
         'name' => 'symfony/skeleton',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '0bbbd5ff6288171ccd0571c815546e8cfdede929',
+        'reference' => '6beeb3f11beaaedb5a8fc57259354960bfcfe35e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -199,6 +199,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'nelmio/cors-bundle' => array(
+            'pretty_version' => '2.5.0',
+            'version' => '2.5.0.0',
+            'reference' => '3a526fe025cd20e04a6a11370cf5ab28dbb5a544',
+            'type' => 'symfony-bundle',
+            'install_path' => __DIR__ . '/../nelmio/cors-bundle',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'nikic/php-parser' => array(
             'pretty_version' => 'v4.19.1',
             'version' => '4.19.1.0',
@@ -289,8 +298,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '3.0.0',
+                0 => '3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psr/simple-cache-implementation' => array(
@@ -764,7 +773,7 @@
         'symfony/skeleton' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '0bbbd5ff6288171ccd0571c815546e8cfdede929',
+            'reference' => '6beeb3f11beaaedb5a8fc57259354960bfcfe35e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

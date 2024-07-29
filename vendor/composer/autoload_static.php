@@ -86,6 +86,7 @@ class ComposerStaticInit07d7b62ff86d53c69f3d66fbe24db2f7
         ),
         'N' => 
         array (
+            'Nelmio\\CorsBundle\\' => 18,
             'Namshi\\JOSE\\' => 12,
         ),
         'M' => 
@@ -364,6 +365,10 @@ class ComposerStaticInit07d7b62ff86d53c69f3d66fbe24db2f7
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
+        'Nelmio\\CorsBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nelmio/cors-bundle',
+        ),
         'Namshi\\JOSE\\' => 
         array (
             0 => __DIR__ . '/..' . '/namshi/jose/src/Namshi/JOSE',
@@ -434,8 +439,8 @@ class ComposerStaticInit07d7b62ff86d53c69f3d66fbe24db2f7
         ),
         'Doctrine\\Common\\' => 
         array (
-            0 => __DIR__ . '/..' . '/doctrine/event-manager/src',
-            1 => __DIR__ . '/..' . '/doctrine/common/src',
+            0 => __DIR__ . '/..' . '/doctrine/common/src',
+            1 => __DIR__ . '/..' . '/doctrine/event-manager/src',
         ),
         'Doctrine\\Bundle\\MigrationsBundle\\' => 
         array (
