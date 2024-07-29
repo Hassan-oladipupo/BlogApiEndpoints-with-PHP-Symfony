@@ -153,11 +153,7 @@ class UserController extends AbstractController
             if (str_contains($error->getMessageKey(), 'Invalid credentials')) {
                 $errorMessage = 'Incorrect password.';
             }
-            //    return new JsonResponse(['error' => $errorMessage], 401);
-            return $this->json([
-                'message' => 'Invalid credentials',
-                'error' => $errorMessage,
-            ], 401);
+            return new JsonResponse(['message' => $errorMessage], 401);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -172,7 +168,7 @@ class UserController extends AbstractController
         $user = $this->entityManager->getRepository(AppUser::class)->findOneBy(['username' => $username]);
 
         if (!$user || !password_verify($password, $user->getPassword())) {
-            return $this->json(['error' => 'Invalid credentials.'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'Invalid credentials.'], Response::HTTP_UNAUTHORIZED);
         }
 
         $token = $this->jwtManager->createJwt($user);
@@ -195,7 +191,7 @@ class UserController extends AbstractController
         $user = $this->entityManager->getRepository(AppUser::class)->findOneBy(['username' => $email]);
 
         if (!$user) {
-            return new JsonResponse(['error' => 'User not found.'], JsonResponse::HTTP_NOT_FOUND);
+            return new JsonResponse(['message' => 'User not found.'], JsonResponse::HTTP_NOT_FOUND);
         }
 
         $token = $this->tokenService->generateConfirmEmailToken($user);
@@ -218,7 +214,7 @@ class UserController extends AbstractController
         $user = $this->entityManager->getRepository(AppUser::class)->findOneBy(['resetToken' => $token]);
 
         if (!$user || $user->getResetTokenExpiresAt() < new \DateTime()) {
-            return new JsonResponse(['error' => 'Invalid or expired token.'], JsonResponse::HTTP_BAD_REQUEST);
+            return new JsonResponse(['message' => 'Invalid or expired token.'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         $validPassword = $this->isValidPassword->validatePassword($newPassword);
