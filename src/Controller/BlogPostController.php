@@ -165,7 +165,7 @@ class BlogPostController extends AbstractController
                     $errorMessages[] = $error->getMessage();
                 }
 
-                return $this->json(['errors' => $errorMessages], 422);
+                return $this->json(['message' => $errorMessages], 422);
             }
 
 
@@ -192,7 +192,7 @@ class BlogPostController extends AbstractController
             $errors = $validator->validate($blogComment);
 
             if (count($errors) > 0) {
-                return $this->json(['errors' => $errors], 422);
+                return $this->json(['message' => $errors], 422);
             }
 
             $blogComment->setBlog($blog);

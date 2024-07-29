@@ -18,7 +18,7 @@ class LikeController extends AbstractController
     {
 
         if (!$blog) {
-            return new JsonResponse(['error' => 'Blog post not found'], 404);
+            return new JsonResponse(['message' => 'Blog post not found'], 404);
         }
 
         $currentUser = $this->getUser();
@@ -28,7 +28,7 @@ class LikeController extends AbstractController
         try {
             $repo->save($blog, true);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Failed to save the like'], 500);
+            return new JsonResponse(['message' => 'Failed to save the like'], 500);
         }
 
         return new JsonResponse(['message' => 'You just liked a post']);
@@ -42,7 +42,7 @@ class LikeController extends AbstractController
     {
 
         if (!$blog) {
-            return new JsonResponse(['error' => 'Blog post not found'], 404);
+            return new JsonResponse(['message' => 'Blog post not found'], 404);
         }
 
         $currentUser = $this->getUser();
@@ -52,7 +52,7 @@ class LikeController extends AbstractController
         try {
             $repo->save($blog, true);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Failed to save the like'], 500);
+            return new JsonResponse(['message' => 'Failed to save the like'], 500);
         }
 
         return new JsonResponse(['message' => 'You just unlike a post']);

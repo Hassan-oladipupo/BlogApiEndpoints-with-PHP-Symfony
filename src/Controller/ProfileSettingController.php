@@ -52,7 +52,7 @@ class ProfileSettingController extends AbstractController
             $errors = $validator->validate($getUserProfile);
 
             if (count($errors) > 0) {
-                return $this->json(['errors' => $errors], 422);
+                return $this->json(['message' => $errors], 422);
             }
 
             $user->setUserProfile($getUserProfile);
@@ -139,7 +139,7 @@ class ProfileSettingController extends AbstractController
                 foreach ($errors as $error) {
                     $errorMessages[] = $error->getMessage();
                 }
-                return new JsonResponse(['errors' => $errorMessages], 422);
+                return new JsonResponse(['message' => $errorMessages], 422);
             }
 
             $entityManager = $doctrine->getManager();
@@ -162,7 +162,7 @@ class ProfileSettingController extends AbstractController
         $profileImageFile = $request->files->get('Image');
 
         if (!$profileImageFile) {
-            return new JsonResponse(['error' => 'No image uploaded.'], 400);
+            return new JsonResponse(['message' => 'No image uploaded.'], 400);
         }
 
         $constraints = [
@@ -176,7 +176,7 @@ class ProfileSettingController extends AbstractController
         $violations = $validator->validate($profileImageFile, $constraints);
 
         if (count($violations) > 0) {
-            return new JsonResponse(['error' => $violations[0]->getMessage()], 400);
+            return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
         }
 
         try {
@@ -202,7 +202,7 @@ class ProfileSettingController extends AbstractController
             return new JsonResponse(['message' => 'Your profile image was updated']);
         } catch (FileException $e) {
             $logger->error('Failed to upload profile image: ' . $e->getMessage());
-            return new JsonResponse(['error' => 'Failed to upload profile image.'], 500);
+            return new JsonResponse(['message' => 'Failed to upload profile image.'], 500);
         }
     }
 }

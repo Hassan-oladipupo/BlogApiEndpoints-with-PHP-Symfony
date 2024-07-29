@@ -27,11 +27,11 @@ class FollowersController extends AbstractController
         $currentUser = $this->getUser();
 
         if (!$currentUser) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
+            return new JsonResponse(['message' => 'User not authenticated'], 401);
         }
 
         if (!$userToFollow || $userToFollow->getId() === $currentUser->getId()) {
-            return new JsonResponse(['error' => 'Invalid user or cannot follow yourself'], 400);
+            return new JsonResponse(['message' => 'Invalid user or cannot follow yourself'], 400);
         }
 
         try {
@@ -59,11 +59,11 @@ class FollowersController extends AbstractController
         $currentUser = $this->getUser();
 
         if (!$currentUser) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
+            return new JsonResponse(['message' => 'User not authenticated'], 401);
         }
 
         if (!$userToUnFollow || $userToUnFollow->getId() === $currentUser->getId()) {
-            return new JsonResponse(['error' => 'Invalid user '], 400);
+            return new JsonResponse(['message' => 'Invalid user '], 400);
         }
 
         try {
@@ -79,7 +79,7 @@ class FollowersController extends AbstractController
         } catch (\Exception $e) {
             $this->logger->error('Failed to unfollow the user: ' . $e->getMessage());
 
-            return new JsonResponse(['error' => 'Failed to unfollow the user'], 500);
+            return new JsonResponse(['message' => 'Failed to unfollow the user'], 500);
         }
     }
 }
