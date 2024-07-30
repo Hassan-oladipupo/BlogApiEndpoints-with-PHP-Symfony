@@ -119,8 +119,8 @@ class BlogPostController extends AbstractController
                 return $this->json(['message' => 'Only logged-in users can add a post.'], 400);
             }
 
-            //$data = $request->request->all();
-            $data = $request->getContent();
+            $data = $request->request->all();
+            // $data = $request->getContent();
             $blogPost = $serializer->deserialize(json_encode($data), BlogPost::class, 'json', ['groups' => 'blogpost']);
 
             $errors = $validator->validate($blogPost);
@@ -128,41 +128,41 @@ class BlogPostController extends AbstractController
                 return $this->json(['errors' => $errors], 422);
             }
 
-            // /** @var UploadedFile $blogImage */
-            // $blogImage = $request->files->get('blogImage');
-            // if (!$blogImage) {
-            //     return new JsonResponse(['message' => 'No image uploaded.'], 400);
-            // }
+            /** @var UploadedFile $blogImage */
+            $blogImage = $request->files->get('blogImage');
+            if (!$blogImage) {
+                return new JsonResponse(['message' => 'No image uploaded.'], 400);
+            }
 
-            // $constraints = [
-            //     new File([
-            //         'maxSize' => '1024k',
-            //         'mimeTypes' => ['image/jpeg', 'image/png'],
-            //         'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
-            //     ]),
-            // ];
+            $constraints = [
+                new File([
+                    'maxSize' => '1024k',
+                    'mimeTypes' => ['image/jpeg', 'image/png'],
+                    'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
+                ]),
+            ];
 
-            // $violations = $validator->validate($blogImage, $constraints);
+            $violations = $validator->validate($blogImage, $constraints);
 
-            // if (count($violations) > 0) {
-            //     return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
-            // }
+            if (count($violations) > 0) {
+                return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
+            }
 
-            // if ($blogImage) {
-            //     $originalFilename = pathinfo($blogImage->getClientOriginalName(), PATHINFO_FILENAME);
-            //     $newFilename = uniqid() . '.' . $blogImage->guessExtension();
+            if ($blogImage) {
+                $originalFilename = pathinfo($blogImage->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename = uniqid() . '.' . $blogImage->guessExtension();
 
-            //     try {
-            //         $blogImage->move(
-            //             $this->getParameter('profiles_directory'),
-            //             $newFilename
-            //         );
-            //         $blogPost->setBlogImage($newFilename);
-            //     } catch (FileException $e) {
-            //         $logger->error('Failed to upload image: ' . $e->getMessage());
-            //         return $this->json(['message' => 'Failed to upload image.'], 500);
-            //     }
-            // }
+                try {
+                    $blogImage->move(
+                        $this->getParameter('profiles_directory'),
+                        $newFilename
+                    );
+                    $blogPost->setBlogImage($newFilename);
+                } catch (FileException $e) {
+                    $logger->error('Failed to upload image: ' . $e->getMessage());
+                    return $this->json(['message' => 'Failed to upload image.'], 500);
+                }
+            }
 
             $blogPost->setAuthor($currentUser);
             $repo->save($blogPost, true);

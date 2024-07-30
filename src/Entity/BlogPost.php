@@ -57,9 +57,9 @@ class BlogPost
     #[ORM\Column]
     private ?bool $extraPrivacy = null;
 
-    // #[ORM\Column(length: 255, nullable: true)]
-    // #[Groups("blogpost")]
-    // private ?string $blogImage = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups("blogpost")]
+    private ?string $blogImage = null;
 
     public function __construct()
     {
@@ -110,17 +110,17 @@ class BlogPost
         return $this;
     }
 
-    // public function getBlogImage(): ?string
-    // {
-    //     return $this->blogImage;
-    // }
+    public function getBlogImage(): ?string
+    {
+        return $this->blogImage;
+    }
 
-    // public function setBlogImage(?string $blogImage): static
-    // {
-    //     $this->blogImage = $blogImage;
+    public function setBlogImage(?string $blogImage): static
+    {
+        $this->blogImage = $blogImage;
 
-    //     return $this;
-    // }
+        return $this;
+    }
 
     /**
      * @return Collection<int, Comment>
