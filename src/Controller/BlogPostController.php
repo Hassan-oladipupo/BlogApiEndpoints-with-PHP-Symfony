@@ -11,12 +11,14 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
@@ -117,12 +119,48 @@ class BlogPostController extends AbstractController
                 return $this->json(['message' => 'Only logged-in users can add a post.'], 400);
             }
 
-            $data = $request->getContent();
-            $blogPost = $serializer->deserialize($data, BlogPost::class, 'json', ['groups' => 'blogpost']);
+            $data = $request->request->all();
+            $blogPost = $serializer->deserialize(json_encode($data), BlogPost::class, 'json', ['groups' => 'blogpost']);
 
             $errors = $validator->validate($blogPost);
             if (count($errors) > 0) {
                 return $this->json(['errors' => $errors], 422);
+            }
+
+            /** @var UploadedFile $blogImage */
+            $blogImage = $request->files->get('blogImage');
+            if (!$blogImage) {
+                return new JsonResponse(['message' => 'No image uploaded.'], 400);
+            }
+
+            $constraints = [
+                new File([
+                    'maxSize' => '1024k',
+                    'mimeTypes' => ['image/jpeg', 'image/png'],
+                    'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
+                ]),
+            ];
+
+            $violations = $validator->validate($blogImage, $constraints);
+
+            if (count($violations) > 0) {
+                return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
+            }
+
+            if ($blogImage) {
+                $originalFilename = pathinfo($blogImage->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename = uniqid() . '.' . $blogImage->guessExtension();
+
+                try {
+                    $blogImage->move(
+                        $this->getParameter('profiles_directory'),
+                        $newFilename
+                    );
+                    $blogPost->setBlogImage($newFilename);
+                } catch (FileException $e) {
+                    $logger->error('Failed to upload image: ' . $e->getMessage());
+                    return $this->json(['message' => 'Failed to upload image.'], 500);
+                }
             }
 
             $blogPost->setAuthor($currentUser);

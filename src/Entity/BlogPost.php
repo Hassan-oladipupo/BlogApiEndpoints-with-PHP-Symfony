@@ -57,6 +57,10 @@ class BlogPost
     #[ORM\Column]
     private ?bool $extraPrivacy = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups("blogpost")]
+    private ?string $blogImage = null;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -102,6 +106,18 @@ class BlogPost
     public function setCreatedate(\DateTimeInterface $createdate): static
     {
         $this->createdate = $createdate;
+
+        return $this;
+    }
+
+    public function getBlogImage(): ?string
+    {
+        return $this->blogImage;
+    }
+
+    public function setBlogImage(?string $blogImage): static
+    {
+        $this->blogImage = $blogImage;
 
         return $this;
     }
