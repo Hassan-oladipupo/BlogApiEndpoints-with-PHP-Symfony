@@ -120,7 +120,6 @@ class BlogPostController extends AbstractController
             }
 
             $data = $request->request->all();
-            // $data = $request->getContent();
             $blogPost = $serializer->deserialize(json_encode($data), BlogPost::class, 'json', ['groups' => 'blogpost']);
 
             $errors = $validator->validate($blogPost);
