@@ -54,6 +54,7 @@ class BlogPostRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+
     //Db query to fetch post with Author
     public function findAllByAuthor(int | AppUser $author): array
     {

@@ -11,6 +11,7 @@ return [
         '/api/blog/post' => [[['_route' => 'app_blog_post', '_controller' => 'App\\Controller\\BlogPostController::retrieveAllBlog'], null, ['GET' => 0], null, false, false, null]],
         '/api/blog-post/top-liked' => [[['_route' => 'app_blog_topliked', '_controller' => 'App\\Controller\\BlogPostController::topLiked'], null, ['GET' => 0], null, false, false, null]],
         '/api/blog-post/follows' => [[['_route' => 'app_blog_post_follows', '_controller' => 'App\\Controller\\BlogPostController::followPosts'], null, ['GET' => 0], null, false, false, null]],
+        '/api/blog-post/add' => [[['_route' => 'app_blog_posts_add', '_controller' => 'App\\Controller\\BlogPostController::addBlog'], null, ['POST' => 0], null, false, false, null]],
         '/api/settings-profile' => [
             [['_route' => 'app_settings_profile', '_controller' => 'App\\Controller\\ProfileSettingController::profile'], null, ['POST' => 0], null, false, false, null],
             [['_route' => 'app_get_user_profile', '_controller' => 'App\\Controller\\ProfileSettingController::retrieveUserProfile'], null, ['GET' => 0], null, false, false, null],
@@ -27,28 +28,27 @@ return [
         0 => '{^(?'
                 .'|/_error/(\\d+)(?:\\.([^/]++))?(*:35)'
                 .'|/api/(?'
-                    .'|blog\\-post/(?'
-                        .'|([^/]++)(*:72)'
-                        .'|add(*:82)'
-                        .'|([^/]++)(?'
+                    .'|blog(?'
+                        .'|/post/([^/]++)(*:71)'
+                        .'|\\-post/([^/]++)(?'
                             .'|/(?'
-                                .'|edit(*:108)'
-                                .'|comment(*:123)'
+                                .'|edit(*:104)'
+                                .'|comment(*:119)'
                             .')'
-                            .'|(*:132)'
+                            .'|(*:128)'
                         .')'
                     .')'
-                    .'|Follow/([^/]++)(*:157)'
+                    .'|Follow/([^/]++)(*:153)'
                     .'|un(?'
-                        .'|Follow/([^/]++)(*:185)'
-                        .'|like/([^/]++)(*:206)'
+                        .'|Follow/([^/]++)(*:181)'
+                        .'|like/([^/]++)(*:202)'
                     .')'
-                    .'|like/([^/]++)(*:228)'
+                    .'|like/([^/]++)(*:224)'
                     .'|profile/([^/]++)(?'
-                        .'|(*:255)'
+                        .'|(*:251)'
                         .'|/follow(?'
-                            .'|ing(*:276)'
-                            .'|ers(*:287)'
+                            .'|ing(*:272)'
+                            .'|ers(*:283)'
                         .')'
                     .')'
                 .')'
@@ -56,18 +56,17 @@ return [
     ],
     [ // $dynamicRoutes
         35 => [[['_route' => '_preview_error', '_controller' => 'error_controller::preview', '_format' => 'html'], ['code', '_format'], null, null, false, true, null]],
-        72 => [[['_route' => 'app_blog_post_show', '_controller' => 'App\\Controller\\BlogPostController::retrieveSingleBlog'], ['blog'], ['GET' => 0], null, false, true, null]],
-        82 => [[['_route' => 'app_blog_posts_add', '_controller' => 'App\\Controller\\BlogPostController::addBlog'], [], ['POST' => 0], null, false, false, null]],
-        108 => [[['_route' => 'app_blog_post_edit', '_controller' => 'App\\Controller\\BlogPostController::editBlog'], ['blog'], ['PUT' => 0], null, false, false, null]],
-        123 => [[['_route' => 'app_blog_post_comment', '_controller' => 'App\\Controller\\BlogPostController::addComment'], ['blog'], ['POST' => 0], null, false, false, null]],
-        132 => [[['_route' => 'app_blog_post_delete', '_controller' => 'App\\Controller\\BlogPostController::deleteBlogPost'], ['id'], ['DELETE' => 0], null, false, true, null]],
-        157 => [[['_route' => 'app_Follow', '_controller' => 'App\\Controller\\FollowersController::follow'], ['id'], ['POST' => 0], null, false, true, null]],
-        185 => [[['_route' => 'app_unFollow', '_controller' => 'App\\Controller\\FollowersController::unFollow'], ['id'], ['POST' => 0], null, false, true, null]],
-        206 => [[['_route' => 'app_unlike', '_controller' => 'App\\Controller\\LikeController::unlike'], ['id'], ['POST' => 0], null, false, true, null]],
-        228 => [[['_route' => 'app_like', '_controller' => 'App\\Controller\\LikeController::like'], ['id'], ['POST' => 0], null, false, true, null]],
-        255 => [[['_route' => 'app_profile', '_controller' => 'App\\Controller\\ProfileController::show'], ['id'], ['GET' => 0], null, false, true, null]],
-        276 => [[['_route' => 'app_profile_following', '_controller' => 'App\\Controller\\ProfileController::following'], ['id'], ['GET' => 0], null, false, false, null]],
-        287 => [
+        71 => [[['_route' => 'app_blog_singlepost', '_controller' => 'App\\Controller\\BlogPostController::retrieveSingleBlog'], ['blog'], ['GET' => 0], null, false, true, null]],
+        104 => [[['_route' => 'app_blog_post_edit', '_controller' => 'App\\Controller\\BlogPostController::editBlog'], ['blog'], ['PUT' => 0], null, false, false, null]],
+        119 => [[['_route' => 'app_blog_post_comment', '_controller' => 'App\\Controller\\BlogPostController::addComment'], ['blog'], ['POST' => 0], null, false, false, null]],
+        128 => [[['_route' => 'app_blog_post_delete', '_controller' => 'App\\Controller\\BlogPostController::deleteBlogPost'], ['id'], ['DELETE' => 0], null, false, true, null]],
+        153 => [[['_route' => 'app_Follow', '_controller' => 'App\\Controller\\FollowersController::follow'], ['id'], ['POST' => 0], null, false, true, null]],
+        181 => [[['_route' => 'app_unFollow', '_controller' => 'App\\Controller\\FollowersController::unFollow'], ['id'], ['POST' => 0], null, false, true, null]],
+        202 => [[['_route' => 'app_unlike', '_controller' => 'App\\Controller\\LikeController::unlike'], ['id'], ['POST' => 0], null, false, true, null]],
+        224 => [[['_route' => 'app_like', '_controller' => 'App\\Controller\\LikeController::like'], ['id'], ['POST' => 0], null, false, true, null]],
+        251 => [[['_route' => 'app_profile', '_controller' => 'App\\Controller\\ProfileController::show'], ['id'], ['GET' => 0], null, false, true, null]],
+        272 => [[['_route' => 'app_profile_following', '_controller' => 'App\\Controller\\ProfileController::following'], ['id'], ['GET' => 0], null, false, false, null]],
+        283 => [
             [['_route' => 'app_profile_followers', '_controller' => 'App\\Controller\\ProfileController::followers'], ['id'], ['GET' => 0], null, false, false, null],
             [null, null, null, null, false, false, 0],
         ],

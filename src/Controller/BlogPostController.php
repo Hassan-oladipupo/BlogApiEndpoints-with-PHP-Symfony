@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\AppUser;
 use App\Entity\Comment;
 use App\Entity\BlogPost;
 use Psr\Log\LoggerInterface;
+use App\Service\BlogPostFormatter;
 use App\Repository\CommentRepository;
 use App\Repository\BlogPostRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,87 +27,82 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class BlogPostController extends AbstractController
 {
 
-    private $logger;
-    public function __construct(LoggerInterface $logger)
+    private LoggerInterface $logger;
+    private BlogPostFormatter $blogPostFormatter;
+
+    public function __construct(LoggerInterface $logger, BlogPostFormatter $blogPostFormatter)
     {
         $this->logger = $logger;
+        $this->blogPostFormatter = $blogPostFormatter;
     }
 
 
 
+
     #[Route('/api/blog/post', name: 'app_blog_post', methods: ['GET'])]
-    public function retrieveAllBlog(BlogPostRepository $repo, SerializerInterface $serializer): JsonResponse
+    public function retrieveAllBlog(BlogPostRepository $repo): JsonResponse
     {
         try {
-
             $blogPosts = $repo->findAllWithComments();
-
-            $json = $serializer->serialize($blogPosts, 'json', ['groups' => 'blogpost']);
-
-            return new JsonResponse($json, 200, [], true);
+            $response = $this->blogPostFormatter->formatBlogPosts($blogPosts);
+            return new JsonResponse($response, 200);
         } catch (\Exception $e) {
-
             $this->logger->error('An error occurred: ' . $e->getMessage());
-
-
             return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
     #[Route('/api/blog-post/top-liked', name: 'app_blog_topliked', methods: ['GET'])]
-    public function topLiked(BlogPostRepository $repo, SerializerInterface $serializer): jsonResponse
+    public function topLiked(BlogPostRepository $repo): JsonResponse
     {
-
         try {
-
             $topLike = $repo->findAllWithMinLikes(2);
-
-            $json = $serializer->serialize($topLike, 'json', ['groups' => 'blogpost']);
-
-            return new JsonResponse($json, 200, [], true);
+            $response = $this->blogPostFormatter->formatBlogPosts($topLike);
+            return new JsonResponse($response, 200);
         } catch (\Exception $e) {
-
             $this->logger->error('An error occurred: ' . $e->getMessage());
-
             return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
+    #[Route('/api/blog/post/{blog}', name: 'app_blog_singlepost', methods: ['GET'])]
+    public function retrieveSingleBlog(BlogPost $blogPost): JsonResponse
+    {
+        try {
+            $response = $this->blogPostFormatter->formatBlogPost($blogPost);
+            return new JsonResponse($response, 200);
+        } catch (\Exception $e) {
+            $this->logger->error('An error occurred: ' . $e->getMessage());
+            return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
 
     #[Route('/api/blog-post/follows', name: 'app_blog_post_follows', methods: ['GET'])]
-    public function followPosts(BlogPostRepository $repo, SerializerInterface $serializer): jsonResponse
+    public function followPosts(BlogPostRepository $repo): JsonResponse
     {
-
         try {
-            /** @var AppUser $currentUser */
-
+            /** @var UserInterface $currentUser */
             $currentUser = $this->getUser();
+
+            if (!$currentUser instanceof AppUser) {
+                return new JsonResponse(['message' => 'User not authenticated'], 401);
+            }
 
             $followPosts = $repo->findAllByAuthors($currentUser->getFollow());
 
             if (empty($followPosts)) {
-
-                return new JsonResponse(['message' => ' No post yet'], 200);
+                return new JsonResponse(['message' => 'No posts yet'], 200);
             }
 
-            $json = $serializer->serialize($followPosts, 'json', ['groups' => 'blogpost']);
+            $json = $this->blogPostFormatter->formatBlogPosts($followPosts);
 
             return new JsonResponse($json, 200, [], true);
         } catch (\Exception $e) {
-
             $this->logger->error('An error occurred: ' . $e->getMessage());
-
             return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
-
-    #[Route('/api/blog-post/{blog}', name: 'app_blog_post_show', methods: ['GET'])]
-    public function retrieveSingleBlog(BlogPost $blog, SerializerInterface $serializer): JsonResponse
-    {
-        $data = $serializer->serialize($blog, 'json', ['groups' => 'blogpost']);
-        return new JsonResponse($data, 200, [], true);
-    }
 
 
 

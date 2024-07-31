@@ -3,13 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\AppUser;
-use App\Entity\User;
 use App\Repository\AppUserRepository;
 use App\Security\JWTManager;
 use Psr\Log\LoggerInterface;
 use App\Service\TokenGenerator;
 use App\Security\PasswordHelper;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
