@@ -6,10 +6,11 @@ use App\Entity\AppUser;
 use App\Entity\Comment;
 use App\Entity\BlogPost;
 use Psr\Log\LoggerInterface;
-use App\Service\BlogPostFormatter;
 use App\Service\ImgurService;
+use App\Service\BlogPostFormatter;
 use App\Repository\CommentRepository;
 use App\Repository\BlogPostRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
@@ -17,10 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class BlogPostController extends AbstractController
 {
@@ -103,8 +106,14 @@ class BlogPostController extends AbstractController
     }
 
     #[Route('/api/blog-post/add', name: 'app_blog_posts_add', methods: ['POST'])]
-    public function addBlog(Request $request, BlogPostRepository $repo, SerializerInterface $serializer, ValidatorInterface $validator, LoggerInterface $logger): JsonResponse
-    {
+    public function addBlog(
+        Request $request,
+        BlogPostRepository $repo,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        LoggerInterface $logger,
+        ImgurService $imgurService
+    ): JsonResponse {
         try {
             /** @var AppUser $currentUser */
             $currentUser = $this->getUser();
@@ -117,12 +126,17 @@ class BlogPostController extends AbstractController
 
             $errors = $validator->validate($blogPost);
             if (count($errors) > 0) {
-                return $this->json(['errors' => $errors], 422);
+                $errorMessages = [];
+                /** @var \Symfony\Component\Validator\ConstraintViolation $error */
+                foreach ($errors as $error) {
+                    $errorMessages[] = $error->getMessage();
+                }
+                return $this->json(['errors' => $errorMessages], 422);
             }
 
-            /** @var UploadedFile $blogImage */
+            /** @var UploadedFile|null $blogImage */
             $blogImage = $request->files->get('blogImage');
-            if ($blogImage) {
+            if ($blogImage instanceof UploadedFile) {
                 $constraints = [
                     new File([
                         'maxSize' => '1024k',
@@ -132,18 +146,29 @@ class BlogPostController extends AbstractController
                 ];
 
                 $violations = $validator->validate($blogImage, $constraints);
-
                 if (count($violations) > 0) {
                     return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
                 }
 
                 try {
-                    $imgurUrl = $this->imgurService->uploadImageStream($blogImage);
-                    $blogPost->setBlogImage($imgurUrl);
+                    $stream = fopen($blogImage->getPathname(), 'r');
+                    $uploadResult = $imgurService->uploadImageStream($stream);
+                    fclose($stream);
+
+                    if ($uploadResult['success']) {
+                        $blogPost->setBlogImage($uploadResult['data']['link']);
+                    } else {
+                        throw new \Exception('Imgur upload failed: ' . $uploadResult['message']);
+                    }
+                } catch (FileException $e) {
+                    $logger->error('File upload failed: ' . $e->getMessage());
+                    return new JsonResponse(['message' => 'File upload failed: ' . $e->getMessage()], 500);
                 } catch (\Exception $e) {
-                    $logger->error('Failed to upload image to Imgur: ' . $e->getMessage());
-                    return $this->json(['message' => 'Failed to upload image.'], 500);
+                    $logger->error('Imgur upload failed: ' . $e->getMessage());
+                    return new JsonResponse(['message' => 'Imgur upload failed: ' . $e->getMessage()], 500);
                 }
+            } else {
+                $blogPost->setBlogImage(null);
             }
 
             $blogPost->setAuthor($currentUser);
@@ -159,36 +184,83 @@ class BlogPostController extends AbstractController
         }
     }
 
+
+
     #[Route('/api/blog-post/{blog}/edit', name: 'app_blog_post_edit', methods: ['PUT'])]
-    public function editBlog(BlogPost $blog, Request $request, BlogPostRepository $repo, SerializerInterface $serializer, ValidatorInterface $validator, LoggerInterface $logger, Security $security): JsonResponse
-    {
+    public function editBlog(
+        BlogPost $blog,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        LoggerInterface $logger,
+        Security $security,
+        ImgurService $imgurService
+    ): JsonResponse {
         $currentUser = $security->getUser();
 
         if ($blog->getAuthor() !== $currentUser) {
             return $this->json(['message' => 'You do not have permission to edit this blog post.'], 403);
         }
 
-        $data = $request->getContent();
+        $jsonData = $request->request->all();
+        $blogImage = $request->files->get('blogImage');
+
         try {
-            $editBlog = $serializer->deserialize($data, BlogPost::class, 'json', [
+            $editBlog = $serializer->deserialize(json_encode($jsonData), BlogPost::class, 'json', [
                 AbstractNormalizer::OBJECT_TO_POPULATE => $blog
             ]);
 
-            $errors = $validator->validate($editBlog);
 
+            $errors = $validator->validate($editBlog);
             if (count($errors) > 0) {
                 $errorMessages = [];
-                /** @var \Symfony\Component\Validator\ConstraintViolation $error */
                 foreach ($errors as $error) {
                     $errorMessages[] = $error->getMessage();
                 }
-
+                $logger->error('Validation errors: ' . json_encode($errorMessages));
                 return $this->json(['message' => $errorMessages], 422);
             }
 
-            $repo->save($editBlog, true);
+            if ($blogImage instanceof UploadedFile) {
+                $constraints = [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
+                    ]),
+                ];
+
+                $violations = $validator->validate($blogImage, $constraints);
+                if (count($violations) > 0) {
+                    return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
+                }
+
+                try {
+                    $stream = fopen($blogImage->getPathname(), 'r');
+                    $uploadResult = $imgurService->uploadImageStream($stream);
+                    fclose($stream);
+
+                    // Log Imgur upload result
+                    $logger->info('Imgur upload result: ' . json_encode($uploadResult));
+
+                    if ($uploadResult['success']) {
+                        $editBlog->setBlogImage($uploadResult['data']['link']);
+                    } else {
+                        throw new \Exception('Imgur upload failed: ' . $uploadResult['message']);
+                    }
+                } catch (FileException $e) {
+                    $logger->error('File upload failed: ' . $e->getMessage());
+                    return $this->json(['message' => 'File upload failed: ' . $e->getMessage()], 500);
+                }
+            }
+
+            // Persist changes using the Entity Manager
+            $entityManager->persist($editBlog);
+            $entityManager->flush();
+
             return $this->json([
-                'message' => "Blog Edited successfully",
+                'message' => "Blog edited successfully",
                 'blogPost' => $editBlog
             ], 200, [], ['groups' => 'blogpost']);
         } catch (\Exception $e) {
