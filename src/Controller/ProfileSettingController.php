@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\AppUser;
 use App\Entity\UserProfile;
 use Psr\Log\LoggerInterface;
+use App\Service\ImgurService;
 use App\Repository\AppUserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,10 +25,13 @@ class ProfileSettingController extends AbstractController
 {
 
     private $logger;
-    public function __construct(LoggerInterface $logger)
+    private $imgurService;
+    public function __construct(LoggerInterface $logger, ImgurService $imgurService)
     {
         $this->logger = $logger;
+        $this->imgurService = $imgurService;
     }
+
 
     #[Route('/api/settings-profile', name: 'app_settings_profile', methods: ['POST'])]
     public function profile(Request $request, AppUserRepository $repo, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $doctrine): JsonResponse
@@ -155,7 +159,6 @@ class ProfileSettingController extends AbstractController
 
 
 
-
     #[Route('/api/settings/profile-image', name: 'app_settings_profile_image', methods: ['POST'])]
     public function profileImage(Request $request, SluggerInterface $slugger, AppUserRepository $repo, LoggerInterface $logger, ValidatorInterface $validator): JsonResponse
     {
@@ -183,26 +186,38 @@ class ProfileSettingController extends AbstractController
             $originalFileName = pathinfo($profileImageFile->getClientOriginalName(), PATHINFO_FILENAME);
             $safeFilename = $slugger->slug($originalFileName);
             $newFileName = $safeFilename . '-' . uniqid() . '.' . $profileImageFile->guessExtension();
+            $tempFilePath = $this->getParameter('profiles_directory') . '/' . $newFileName;
 
             $profileImageFile->move(
                 $this->getParameter('profiles_directory'),
                 $newFileName
             );
 
-            /** @var AppUser $user */
-            $user = $this->getUser();
+            $uploadResult = $this->imgurService->uploadImage($tempFilePath);
 
-            $profile = $user->getUserProfile() ?? new UserProfile();
-            $profile->setImage($newFileName);
-            $user->setUserProfile($profile);
+            if ($uploadResult['success']) {
+                /** @var AppUser $user */
+                $user = $this->getUser();
 
-            $repo->save($user, true);
+                $profile = $user->getUserProfile() ?? new UserProfile();
+                $profile->setImage($uploadResult['data']['link']);
+                $user->setUserProfile($profile);
 
+                $repo->save($user, true);
 
-            return new JsonResponse(['message' => 'Your profile image was updated']);
+                unlink($tempFilePath);
+
+                return new JsonResponse(['message' => 'Your profile image was updated']);
+            } else {
+                unlink($tempFilePath);
+                throw new \Exception('Imgur upload failed.');
+            }
         } catch (FileException $e) {
             $logger->error('Failed to upload profile image: ' . $e->getMessage());
             return new JsonResponse(['message' => 'Failed to upload profile image.'], 500);
+        } catch (\Exception $e) {
+            $logger->error('Imgur upload failed: ' . $e->getMessage());
+            return new JsonResponse(['message' => 'Imgur upload failed.'], 500);
         }
     }
 }

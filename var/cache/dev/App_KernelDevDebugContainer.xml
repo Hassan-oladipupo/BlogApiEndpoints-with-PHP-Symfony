@@ -4932,10 +4932,10 @@
         <argument key="repo" type="service_closure" id="App\Repository\BlogPostRepository"/>
       </argument>
     </service>
-    <service id=".service_locator.cYpLFu1" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.cIvhbp5" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="blogPost" type="service_closure" id=".errored..service_locator.cYpLFu1.App\Entity\BlogPost"/>
+        <argument key="blog" type="service_closure" id=".errored..service_locator.cIvhbp5.App\Entity\BlogPost"/>
       </argument>
     </service>
     <service id=".service_locator.r682ukv" class="Symfony\Component\DependencyInjection\ServiceLocator">
@@ -5066,7 +5066,7 @@
         <argument key="userPasswordHasher" type="service_closure" id="security.user_password_hasher"/>
       </argument>
     </service>
-    <service id=".service_locator.H1yf7bv" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.5T.UpY." class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\BlogPostController::addBlog" type="service_closure" id=".service_locator.r682ukv"/>
@@ -5075,7 +5075,7 @@
         <argument key="App\Controller\BlogPostController::editBlog" type="service_closure" id=".service_locator.xcCKT4K"/>
         <argument key="App\Controller\BlogPostController::followPosts" type="service_closure" id=".service_locator.GLXEf8M"/>
         <argument key="App\Controller\BlogPostController::retrieveAllBlog" type="service_closure" id=".service_locator.GLXEf8M"/>
-        <argument key="App\Controller\BlogPostController::retrieveSingleBlog" type="service_closure" id=".service_locator.cYpLFu1"/>
+        <argument key="App\Controller\BlogPostController::retrieveSingleBlog" type="service_closure" id=".service_locator.cIvhbp5"/>
         <argument key="App\Controller\BlogPostController::topLiked" type="service_closure" id=".service_locator.GLXEf8M"/>
         <argument key="App\Controller\FollowersController::follow" type="service_closure" id=".service_locator.gEOpjwz"/>
         <argument key="App\Controller\FollowersController::unFollow" type="service_closure" id=".service_locator.hRnhTRv"/>
@@ -5101,7 +5101,7 @@
         <argument key="App\Controller\BlogPostController:editBlog" type="service_closure" id=".service_locator.xcCKT4K"/>
         <argument key="App\Controller\BlogPostController:followPosts" type="service_closure" id=".service_locator.GLXEf8M"/>
         <argument key="App\Controller\BlogPostController:retrieveAllBlog" type="service_closure" id=".service_locator.GLXEf8M"/>
-        <argument key="App\Controller\BlogPostController:retrieveSingleBlog" type="service_closure" id=".service_locator.cYpLFu1"/>
+        <argument key="App\Controller\BlogPostController:retrieveSingleBlog" type="service_closure" id=".service_locator.cIvhbp5"/>
         <argument key="App\Controller\BlogPostController:topLiked" type="service_closure" id=".service_locator.GLXEf8M"/>
         <argument key="App\Controller\FollowersController:follow" type="service_closure" id=".service_locator.gEOpjwz"/>
         <argument key="App\Controller\FollowersController:unFollow" type="service_closure" id=".service_locator.hRnhTRv"/>
@@ -5509,12 +5509,12 @@
     <service id="debug.argument_resolver.request.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestValueResolver"/>
     <service id="debug.argument_resolver.session.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\SessionValueResolver"/>
     <service id="debug.argument_resolver.service.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
-      <argument type="service" id=".service_locator.H1yf7bv"/>
+      <argument type="service" id=".service_locator.5T.UpY."/>
     </service>
     <service id="debug.argument_resolver.default.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver"/>
     <service id="debug.argument_resolver.variadic.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver"/>
     <service id="debug.argument_resolver.not_tagged_controller.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
-      <argument type="service" id=".service_locator.H1yf7bv"/>
+      <argument type="service" id=".service_locator.5T.UpY."/>
     </service>
     <service id=".doctrine.orm.default_metadata_driver.inner" class="Doctrine\Persistence\Mapping\Driver\MappingDriverChain">
       <call method="addDriver">
@@ -5523,7 +5523,7 @@
       </call>
     </service>
     <service id=".errored..service_locator.y4_Zrx..Symfony\Component\Config\Loader\LoaderInterface" class="Symfony\Component\Config\Loader\LoaderInterface"/>
-    <service id=".errored..service_locator.cYpLFu1.App\Entity\BlogPost" class="App\Entity\BlogPost"/>
+    <service id=".errored..service_locator.cIvhbp5.App\Entity\BlogPost" class="App\Entity\BlogPost"/>
     <service id=".errored..service_locator.xcCKT4K.App\Entity\BlogPost" class="App\Entity\BlogPost"/>
     <service id=".errored..service_locator.1MKZjV2.App\Entity\BlogPost" class="App\Entity\BlogPost"/>
     <service id=".errored..service_locator.gEOpjwz.App\Entity\AppUser" class="App\Entity\AppUser"/>
@@ -6322,7 +6322,7 @@
     <service id="Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface" alias="lexik_jwt_authentication.encoder.lcobucci"/>
     <service id="lexik_jwt_authentication.key_loader" alias="lexik_jwt_authentication.key_loader.raw" public="true"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.7nzbL4K" public="true"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.H1yf7bv"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.5T.UpY."/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
     <service id="Psr\Log\LoggerInterface $requestLogger" alias="monolog.logger.request"/>
     <service id="Psr\Log\LoggerInterface $consoleLogger" alias="monolog.logger.console"/>
@@ -6346,7 +6346,7 @@
     <service id=".service_locator.Cp2Pr89" alias=".service_locator.sfEME4w"/>
     <service id=".service_locator.NnI.jB9" alias=".service_locator.XttDSVG"/>
     <service id=".service_locator.40JY0Gu" alias=".service_locator.T1d6F8j"/>
-    <service id=".service_locator.ImK8lDz" alias=".service_locator.H1yf7bv"/>
+    <service id=".service_locator.6BtJw50" alias=".service_locator.5T.UpY."/>
     <service id=".service_locator.9XMoc9I" alias=".service_locator.kzegaci"/>
     <service id=".service_locator.qBCHs1a" alias=".service_locator.QXcJQkF"/>
     <service id=".service_locator.VZoQk0z" alias=".service_locator.CshazM0"/>
@@ -6371,7 +6371,7 @@
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id=".service_locator.gFlme_s" alias=".service_locator.y4_Zrx."/>
     <service id=".service_locator.MznVSNg" alias=".service_locator.GLXEf8M"/>
-    <service id=".service_locator.v_kkxXy" alias=".service_locator.cYpLFu1"/>
+    <service id=".service_locator.PdzslvZ" alias=".service_locator.cIvhbp5"/>
     <service id=".service_locator.rUj.lmf" alias=".service_locator.r682ukv"/>
     <service id=".service_locator.pCmKKSN" alias=".service_locator.xcCKT4K"/>
     <service id=".service_locator.fePJ9pL" alias=".service_locator.1MKZjV2"/>

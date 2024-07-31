@@ -6,6 +6,7 @@ use App\Entity\AppUser;
 use App\Entity\Comment;
 use App\Entity\BlogPost;
 use Psr\Log\LoggerInterface;
+use App\Service\ImgurService;
 use App\Service\BlogPostFormatter;
 use App\Repository\CommentRepository;
 use App\Repository\BlogPostRepository;
@@ -29,12 +30,17 @@ class BlogPostController extends AbstractController
 
     private LoggerInterface $logger;
     private BlogPostFormatter $blogPostFormatter;
+    private $imgurService;
 
-    public function __construct(LoggerInterface $logger, BlogPostFormatter $blogPostFormatter)
+
+    public function __construct(LoggerInterface $logger, BlogPostFormatter $blogPostFormatter, ImgurService $imgurService)
     {
         $this->logger = $logger;
         $this->blogPostFormatter = $blogPostFormatter;
+        $this->imgurService = $imgurService;
     }
+
+
 
 
 
@@ -152,12 +158,20 @@ class BlogPostController extends AbstractController
                 $newFilename = uniqid() . '.' . $blogImage->guessExtension();
 
                 try {
-                    $blogImage->move(
-                        $this->getParameter('profiles_directory'),
-                        $newFilename
-                    );
-                    $blogPost->setBlogImage($newFilename);
-                } catch (FileException $e) {
+                    $tempDir = sys_get_temp_dir();
+                    $blogImage->move($tempDir, $newFilename);
+                    $tempFilePath = $tempDir . DIRECTORY_SEPARATOR . $newFilename;
+
+                    $uploadResult = $this->imgurService->uploadImage($tempFilePath);
+
+                    if ($uploadResult['success']) {
+                        $blogPost->setBlogImage($uploadResult['data']['link']);
+                    } else {
+                        throw new \Exception('Imgur upload failed.');
+                    }
+
+                    unlink($tempFilePath);
+                } catch (\Exception $e) {
                     $logger->error('Failed to upload image: ' . $e->getMessage());
                     return $this->json(['message' => 'Failed to upload image.'], 500);
                 }
