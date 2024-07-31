@@ -2,36 +2,93 @@
 
 namespace App\Controller;
 
-
 use App\Entity\AppUser;
 use App\Entity\UserProfile;
-use Psr\Log\LoggerInterface;
-use App\Service\ImgurService;
 use App\Repository\AppUserRepository;
-use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\File;
+use App\Service\ImgurService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints\File;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class ProfileSettingController extends AbstractController
 {
-
     private $logger;
     private $imgurService;
+
     public function __construct(LoggerInterface $logger, ImgurService $imgurService)
     {
         $this->logger = $logger;
         $this->imgurService = $imgurService;
     }
 
+    #[Route('/api/settings/profile-image', name: 'app_settings_profile_image', methods: ['POST'])]
+    public function profileImage(Request $request, SluggerInterface $slugger, AppUserRepository $repo, ValidatorInterface $validator): JsonResponse
+    {
+        $profileImageFile = $request->files->get('image');
+
+        if (!$profileImageFile instanceof UploadedFile) {
+            return new JsonResponse(['message' => 'No image uploaded.'], 400);
+        }
+
+        $constraints = [
+            new File([
+                'maxSize' => '1024k',
+                'mimeTypes' => ['image/jpeg', 'image/png'],
+                'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
+            ]),
+        ];
+
+        $violations = $validator->validate($profileImageFile, $constraints);
+
+        if (count($violations) > 0) {
+            return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
+        }
+
+        try {
+            $originalFileName = pathinfo($profileImageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFileName);
+            $newFileName = $safeFilename . '-' . uniqid() . '.' . $profileImageFile->guessExtension();
+
+            $stream = fopen($profileImageFile->getPathname(), 'r');
+
+            $uploadResult = $this->imgurService->uploadImageStream($stream);
+
+            if ($uploadResult['success']) {
+                /** @var AppUser $user */
+                $user = $this->getUser();
+
+                $profile = $user->getUserProfile() ?? new UserProfile();
+                $profile->setImage($uploadResult['data']['link']);
+                $user->setUserProfile($profile);
+
+                $repo->save($user, true);
+
+                fclose($stream);
+
+                return new JsonResponse(['message' => 'Your profile image was updated']);
+            } else {
+                fclose($stream);
+                throw new \Exception('Imgur upload failed: ' . $uploadResult['message']);
+            }
+        } catch (FileException $e) {
+            $this->logger->error('Failed to upload profile image: ' . $e->getMessage());
+            return new JsonResponse(['message' => 'Failed to upload profile image.'], 500);
+        } catch (\Exception $e) {
+            $this->logger->error('Imgur upload failed: ' . $e->getMessage());
+            return new JsonResponse(['message' => 'Imgur upload failed: ' . $e->getMessage()], 500);
+        }
+    }
 
     #[Route('/api/settings-profile', name: 'app_settings_profile', methods: ['POST'])]
     public function profile(Request $request, AppUserRepository $repo, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $doctrine): JsonResponse
@@ -65,20 +122,14 @@ class ProfileSettingController extends AbstractController
             $entityManager->persist($getUserProfile);
             $entityManager->flush();
 
-
             return new JsonResponse(['message' => 'Your user profile settings were saved'], 200);
         } catch (\Exception $e) {
-
-
             $this->logger->error('An error occurred: ' . $e->getMessage());
-
             return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
-
-    #[Route('api/settings-profile', name: 'app_get_user_profile', methods: ['GET'])]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/api/settings-profile', name: 'app_get_user_profile', methods: ['GET'])]
     public function retrieveUserProfile(): JsonResponse
     {
         try {
@@ -97,9 +148,7 @@ class ProfileSettingController extends AbstractController
             $profileData = [
                 'firstName' => $userProfile->getName(),
                 'dateOfBirth' => $userProfile->getDateOfBirth() ? $userProfile->getDateOfBirth()->format('Y-m-d') : null,
-                'profileImage' => $userProfile->getImage()
-                    ? $this->getParameter('profiles_directory') . '/' . $userProfile->getImage()
-                    : null,
+                'profileImage' => $userProfile->getImage(),
                 'bio' => $userProfile->getBio(),
                 'websiteUrl' => $userProfile->getWebsiteUrl(),
                 'twitterUsername' => $userProfile->getTwitterUsername(),
@@ -108,16 +157,11 @@ class ProfileSettingController extends AbstractController
             ];
 
             return new JsonResponse($profileData, 200);
-            return $this->json([
-                'message' => "Profile data retrieve successfully",
-                'profileData' =>  $profileData
-            ], 200);
         } catch (\Exception $e) {
             $this->logger->error('An error occurred: ' . $e->getMessage());
             return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
-
 
     #[Route('/api/setting-profile', name: 'app_update_user_profile', methods: ['PUT'])]
     public function updateUserProfile(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $doctrine): JsonResponse
@@ -154,70 +198,6 @@ class ProfileSettingController extends AbstractController
         } catch (\Exception $e) {
             $this->logger->error('An error occurred: ' . $e->getMessage());
             return new JsonResponse(['message' => 'An error occurred: ' . $e->getMessage()], 500);
-        }
-    }
-
-
-
-    #[Route('/api/settings/profile-image', name: 'app_settings_profile_image', methods: ['POST'])]
-    public function profileImage(Request $request, SluggerInterface $slugger, AppUserRepository $repo, LoggerInterface $logger, ValidatorInterface $validator): JsonResponse
-    {
-        $profileImageFile = $request->files->get('Image');
-
-        if (!$profileImageFile) {
-            return new JsonResponse(['message' => 'No image uploaded.'], 400);
-        }
-
-        $constraints = [
-            new File([
-                'maxSize' => '1024k',
-                'mimeTypes' => ['image/jpeg', 'image/png'],
-                'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
-            ]),
-        ];
-
-        $violations = $validator->validate($profileImageFile, $constraints);
-
-        if (count($violations) > 0) {
-            return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
-        }
-
-        try {
-            $originalFileName = pathinfo($profileImageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFileName);
-            $newFileName = $safeFilename . '-' . uniqid() . '.' . $profileImageFile->guessExtension();
-            $tempFilePath = $this->getParameter('profiles_directory') . '/' . $newFileName;
-
-            $profileImageFile->move(
-                $this->getParameter('profiles_directory'),
-                $newFileName
-            );
-
-            $uploadResult = $this->imgurService->uploadImage($tempFilePath);
-
-            if ($uploadResult['success']) {
-                /** @var AppUser $user */
-                $user = $this->getUser();
-
-                $profile = $user->getUserProfile() ?? new UserProfile();
-                $profile->setImage($uploadResult['data']['link']);
-                $user->setUserProfile($profile);
-
-                $repo->save($user, true);
-
-                unlink($tempFilePath);
-
-                return new JsonResponse(['message' => 'Your profile image was updated']);
-            } else {
-                unlink($tempFilePath);
-                throw new \Exception('Imgur upload failed.');
-            }
-        } catch (FileException $e) {
-            $logger->error('Failed to upload profile image: ' . $e->getMessage());
-            return new JsonResponse(['message' => 'Failed to upload profile image.'], 500);
-        } catch (\Exception $e) {
-            $logger->error('Imgur upload failed: ' . $e->getMessage());
-            return new JsonResponse(['message' => 'Imgur upload failed.'], 500);
         }
     }
 }

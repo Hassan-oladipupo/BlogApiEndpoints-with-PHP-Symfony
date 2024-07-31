@@ -6,8 +6,8 @@ use App\Entity\AppUser;
 use App\Entity\Comment;
 use App\Entity\BlogPost;
 use Psr\Log\LoggerInterface;
-use App\Service\ImgurService;
 use App\Service\BlogPostFormatter;
+use App\Service\ImgurService;
 use App\Repository\CommentRepository;
 use App\Repository\BlogPostRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,15 +20,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BlogPostController extends AbstractController
 {
-
     private LoggerInterface $logger;
     private BlogPostFormatter $blogPostFormatter;
-    private $imgurService;
-
+    private ImgurService $imgurService;
 
     public function __construct(LoggerInterface $logger, BlogPostFormatter $blogPostFormatter, ImgurService $imgurService)
     {
@@ -36,11 +34,6 @@ class BlogPostController extends AbstractController
         $this->blogPostFormatter = $blogPostFormatter;
         $this->imgurService = $imgurService;
     }
-
-
-
-
-
 
     #[Route('/api/blog/post', name: 'app_blog_post', methods: ['GET'])]
     public function retrieveAllBlog(BlogPostRepository $repo): JsonResponse
@@ -87,7 +80,7 @@ class BlogPostController extends AbstractController
     public function followPosts(BlogPostRepository $repo): JsonResponse
     {
         try {
-            /** @var UserInterface $currentUser */
+            /** @var AppUser $currentUser */
             $currentUser = $this->getUser();
 
             if (!$currentUser instanceof AppUser) {
@@ -109,9 +102,6 @@ class BlogPostController extends AbstractController
         }
     }
 
-
-
-
     #[Route('/api/blog-post/add', name: 'app_blog_posts_add', methods: ['POST'])]
     public function addBlog(Request $request, BlogPostRepository $repo, SerializerInterface $serializer, ValidatorInterface $validator, LoggerInterface $logger): JsonResponse
     {
@@ -132,44 +122,26 @@ class BlogPostController extends AbstractController
 
             /** @var UploadedFile $blogImage */
             $blogImage = $request->files->get('blogImage');
-            if (!$blogImage) {
-                return new JsonResponse(['message' => 'No image uploaded.'], 400);
-            }
-
-            $constraints = [
-                new File([
-                    'maxSize' => '1024k',
-                    'mimeTypes' => ['image/jpeg', 'image/png'],
-                    'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
-                ]),
-            ];
-
-            $violations = $validator->validate($blogImage, $constraints);
-
-            if (count($violations) > 0) {
-                return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
-            }
-
             if ($blogImage) {
-                $originalFilename = pathinfo($blogImage->getClientOriginalName(), PATHINFO_FILENAME);
-                $newFilename = uniqid() . '.' . $blogImage->guessExtension();
+                $constraints = [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
+                    ]),
+                ];
+
+                $violations = $validator->validate($blogImage, $constraints);
+
+                if (count($violations) > 0) {
+                    return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
+                }
 
                 try {
-                    $tempDir = sys_get_temp_dir();
-                    $blogImage->move($tempDir, $newFilename);
-                    $tempFilePath = $tempDir . DIRECTORY_SEPARATOR . $newFilename;
-
-                    $uploadResult = $this->imgurService->uploadImage($tempFilePath);
-
-                    if ($uploadResult['success']) {
-                        $blogPost->setBlogImage($uploadResult['data']['link']);
-                    } else {
-                        throw new \Exception('Imgur upload failed.');
-                    }
-
-                    unlink($tempFilePath);
+                    $imgurUrl = $this->imgurService->uploadImageStream($blogImage);
+                    $blogPost->setBlogImage($imgurUrl);
                 } catch (\Exception $e) {
-                    $logger->error('Failed to upload image: ' . $e->getMessage());
+                    $logger->error('Failed to upload image to Imgur: ' . $e->getMessage());
                     return $this->json(['message' => 'Failed to upload image.'], 500);
                 }
             }
@@ -187,12 +159,9 @@ class BlogPostController extends AbstractController
         }
     }
 
-
-
     #[Route('/api/blog-post/{blog}/edit', name: 'app_blog_post_edit', methods: ['PUT'])]
     public function editBlog(BlogPost $blog, Request $request, BlogPostRepository $repo, SerializerInterface $serializer, ValidatorInterface $validator, LoggerInterface $logger, Security $security): JsonResponse
     {
-
         $currentUser = $security->getUser();
 
         if ($blog->getAuthor() !== $currentUser) {
@@ -217,8 +186,6 @@ class BlogPostController extends AbstractController
                 return $this->json(['message' => $errorMessages], 422);
             }
 
-
-
             $repo->save($editBlog, true);
             return $this->json([
                 'message' => "Blog Edited successfully",
@@ -226,7 +193,7 @@ class BlogPostController extends AbstractController
             ], 200, [], ['groups' => 'blogpost']);
         } catch (\Exception $e) {
             $logger->error('An error occurred: ' . $e->getMessage());
-            return $this->json(['message' => 'An error occurred' . $e->getMessage()], 500);
+            return $this->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
@@ -241,27 +208,28 @@ class BlogPostController extends AbstractController
             $errors = $validator->validate($blogComment);
 
             if (count($errors) > 0) {
-                return $this->json(['message' => $errors], 422);
+                $errorMessages = [];
+                /** @var \Symfony\Component\Validator\ConstraintViolation $error */
+                foreach ($errors as $error) {
+                    $errorMessages[] = $error->getMessage();
+                }
+
+                return $this->json(['message' => $errorMessages], 422);
             }
 
-            $blogComment->setBlog($blog);
-            $blogComment->setAuthor($this->getUser());
+            $blogComment->setBlogPost($blog);
             $repo->save($blogComment, true);
 
-            $data = $serializer->serialize($blogComment, 'json', ['groups' => 'comment']);
-
             return $this->json([
-                'message' => "Your Comment has been added",
-                'blogComment' =>  $blogComment
-            ], 200, [], ['groups' => 'comment']);
+                'message' => "Comment added successfully",
+                'comment' => $blogComment
+            ], 201, [], ['groups' => 'comment']);
         } catch (\Exception $e) {
-
-            $this->logger->error('An error occurred: ' . $e->getMessage());
-
-
             return $this->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
+
 
     //delete blogpost
     #[Route('/api/blog-post/{id}', name: 'app_blog_post_delete', methods: ['DELETE'])]

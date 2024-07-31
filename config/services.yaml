@@ -1,15 +1,18 @@
+parameters:
+    profiles: '/uploads/profiles/'
+    profiles_directory: '%kernel.project_dir%/public%profiles%'
+
+
 services:
-    # Default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: true
+        autoconfigure: true
 
-    # Service definitions
     App\Service\BlogPostFormatter: ~    
-    App\Service\ImgurService: ~ # Ensure the class name is correctly cased
+    App\Service\ImgurService:
+        arguments:
+            $client: '@http_client'
 
-    # Makes classes in src/ available to be used as services
-    # This creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
         exclude:
@@ -21,9 +24,6 @@ services:
         resource: '../src/Repository'
         public: true
         tags: ['doctrine.repository_service']
-
-    # Add more service definitions when explicit configuration is needed
-    # Please note that last definitions always *replace* previous ones
 
     App\Security\JWTManager:
         arguments:
