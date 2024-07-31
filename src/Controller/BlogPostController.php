@@ -66,10 +66,10 @@ class BlogPostController extends AbstractController
     }
 
     #[Route('/api/blog/post/{blog}', name: 'app_blog_singlepost', methods: ['GET'])]
-    public function retrieveSingleBlog(BlogPost $blogPost): JsonResponse
+    public function retrieveSingleBlog(BlogPost $blog): JsonResponse
     {
         try {
-            $response = $this->blogPostFormatter->formatBlogPost($blogPost);
+            $response = $this->blogPostFormatter->formatBlogPost($blog);
             return new JsonResponse($response, 200);
         } catch (\Exception $e) {
             $this->logger->error('An error occurred: ' . $e->getMessage());
