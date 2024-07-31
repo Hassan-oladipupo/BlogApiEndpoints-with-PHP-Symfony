@@ -69,6 +69,9 @@ class BlogPostController extends AbstractController
     public function retrieveSingleBlog(BlogPost $blog): JsonResponse
     {
         try {
+            if (!$blog) {
+                return new JsonResponse(['message' => 'Blog post not found'], 404);
+            }
             $response = $this->blogPostFormatter->formatBlogPost($blog);
             return new JsonResponse($response, 200);
         } catch (\Exception $e) {
