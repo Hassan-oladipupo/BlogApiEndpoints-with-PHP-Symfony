@@ -4,7 +4,7 @@ namespace App\Service;
 
 use GuzzleHttp\Client;
 
-class imgurService
+class ImgurService
 {
     private $client;
 

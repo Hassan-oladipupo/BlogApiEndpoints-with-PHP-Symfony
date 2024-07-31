@@ -59,8 +59,6 @@
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
     <parameter key="kernel.container_class">App_KernelDevDebugContainer</parameter>
-    <parameter key="profiles">/uploads/profiles/</parameter>
-    <parameter key="profiles_directory">C:\Users\hp\OneDrive\Desktop\BuildAfricaAHMED\BlogApiEndpoints-with-PHP-Symfony/public/uploads/profiles/</parameter>
     <parameter key="event_dispatcher.event_aliases" type="collection">
       <parameter key="Symfony\Component\Console\Event\ConsoleCommandEvent">console.command</parameter>
       <parameter key="Symfony\Component\Console\Event\ConsoleErrorEvent">console.error</parameter>
@@ -272,6 +270,7 @@
       <tag name="routing.route_loader"/>
     </service>
     <service id="App\Service\BlogPostFormatter" class="App\Service\BlogPostFormatter" autowire="true" autoconfigure="true"/>
+    <service id="App\Service\ImgurService" class="App\Service\ImgurService" autowire="true" autoconfigure="true"/>
     <service id="App\Entity" class="App\Entity" abstract="true">
       <tag name="container.excluded" source="in &quot;config/services.yaml&quot;"/>
     </service>
@@ -280,6 +279,7 @@
       <tag name="container.service_subscriber"/>
       <argument type="service" id="monolog.logger"/>
       <argument type="service" id="App\Service\BlogPostFormatter"/>
+      <argument type="service" id="App\Service\ImgurService"/>
       <call method="setContainer">
         <argument type="service" id=".service_locator.CshazM0.App\Controller\BlogPostController"/>
       </call>
@@ -311,6 +311,7 @@
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
       <argument type="service" id="monolog.logger"/>
+      <argument type="service" id="App\Service\ImgurService"/>
       <call method="setContainer">
         <argument type="service" id=".service_locator.CshazM0.App\Controller\ProfileSettingController"/>
       </call>
@@ -343,7 +344,6 @@
       <tag name="doctrine.repository_service"/>
       <argument type="service" id="doctrine"/>
     </service>
-    <service id="App\Security\BlogPostFormatter" class="App\Security\BlogPostFormatter" autowire="true" autoconfigure="true"/>
     <service id="App\Security\JWTManager" class="App\Security\JWTManager" public="true" autowire="true" autoconfigure="true">
       <argument type="service" id="lexik_jwt_authentication.encoder.lcobucci"/>
       <argument type="service" id="debug.event_dispatcher"/>
