@@ -25,6 +25,8 @@ class ImgurService
 
         while ($attempts < $retryCount) {
             try {
+                $this->logger->info('Attempting to upload image to Imgur', ['attempt' => $attempts]);
+
                 $response = $this->client->request('POST', 'https://api.imgur.com/3/image', [
                     'headers' => [
                         'Authorization' => 'Client-ID ' . $this->clientId,
@@ -33,7 +35,10 @@ class ImgurService
                         'image' => base64_encode(stream_get_contents($stream)),
                         'type' => 'base64',
                     ],
+                    'timeout' => 30,
                 ]);
+
+                $this->logger->info('Received response from Imgur');
 
                 $content = $response->getBody()->getContents();
                 $data = json_decode($content, true);
@@ -53,12 +58,12 @@ class ImgurService
                     'success' => false,
                     'message' => $data['data']['error'] ?? 'Unknown error',
                 ];
-            } catch (\GuzzleHttp\Exception\ClientException $e) {
-                $this->logger->error('Client error during Imgur upload', [
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                $this->logger->error('Request error during Imgur upload', [
                     'exception' => $e,
                 ]);
 
-                if ($e->getResponse()->getStatusCode() === 429) {
+                if ($e->getResponse() && $e->getResponse()->getStatusCode() === 429) {
                     $this->logger->warning('Rate limit exceeded, backing off', [
                         'attempt' => $attempts,
                         'backoff' => $backoff,
@@ -68,7 +73,7 @@ class ImgurService
                 } else {
                     return [
                         'success' => false,
-                        'message' => 'Client error: ' . $e->getMessage(),
+                        'message' => 'Request error: ' . $e->getMessage(),
                     ];
                 }
             } catch (\GuzzleHttp\Exception\ServerException $e) {
@@ -76,6 +81,7 @@ class ImgurService
                     'exception' => $e,
                 ]);
 
+                // Handle server errors with retry logic
                 if (++$attempts >= $retryCount) {
                     return [
                         'success' => false,
