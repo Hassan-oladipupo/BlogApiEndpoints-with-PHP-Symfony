@@ -85,6 +85,12 @@ class ImgurService
                         'message' => 'An unexpected error occurred: ' . $e->getMessage(),
                     ];
                 }
+            } catch (\Exception $e) {
+                $this->logger->error('Imgur upload failed: ' . $e->getMessage());
+                return [
+                    'success' => false,
+                    'message' => 'Imgur upload failed: ' . $e->getMessage(),
+                ];
             }
         }
     }
