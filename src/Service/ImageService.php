@@ -38,6 +38,14 @@ class ImgurService
                 $content = $response->getBody()->getContents();
                 $data = json_decode($content, true);
 
+                if (is_null($data)) {
+                    $this->logger->error('Failed to decode JSON response', ['response' => $content]);
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to decode JSON response from Imgur API',
+                    ];
+                }
+
                 if (isset($data['success']) && $data['success']) {
                     return [
                         'success' => true,
@@ -45,13 +53,19 @@ class ImgurService
                     ];
                 }
 
+                $errorMessage = isset($data['data']) && is_array($data['data'])
+                    ? ($data['data']['error'] ?? 'Unknown error')
+                    : 'Unknown error';
+
                 $this->logger->error('Imgur upload failed', [
                     'response' => $data,
+                    'status_code' => $response->getStatusCode(),
+                    'response_body' => $content,
                 ]);
 
                 return [
                     'success' => false,
-                    'message' => $data['data']['error'] ?? 'Unknown error',
+                    'message' => $errorMessage,
                 ];
             } catch (\GuzzleHttp\Exception\ClientException $e) {
                 if ($e->getCode() === 429) {
