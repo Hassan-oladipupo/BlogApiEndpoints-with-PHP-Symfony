@@ -4,6 +4,7 @@ namespace App\Service;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
+use GuzzleHttp\Exception\RequestException;
 
 class ImgurService
 {
@@ -35,6 +36,8 @@ class ImgurService
                     ],
                 ]);
 
+                $this->logRateLimitHeaders($response);
+
                 $content = $response->getBody()->getContents();
                 $data = json_decode($content, true);
 
@@ -53,10 +56,22 @@ class ImgurService
                     'success' => false,
                     'message' => $data['data']['error'] ?? 'Unknown error',
                 ];
-            } catch (\Exception $e) {
+            } catch (RequestException $e) {
                 $this->logger->error('An error occurred during Imgur upload', [
                     'exception' => $e,
                 ]);
+
+                if ($e->getCode() == 429 && $attempts < $retryCount) {
+                    $this->logger->info('Rate limit hit, retrying after backoff', [
+                        'attempts' => $attempts,
+                        'backoff' => $backoff,
+                    ]);
+
+                    sleep($backoff); // Exponential backoff
+                    $backoff *= 2; // Double the backoff time
+                    $attempts++;
+                    continue;
+                }
 
                 if (++$attempts >= $retryCount) {
                     return [
@@ -64,10 +79,19 @@ class ImgurService
                         'message' => 'An unexpected error occurred: ' . $e->getMessage(),
                     ];
                 }
-
-                sleep($backoff); // Exponential backoff
-                $backoff *= 2; // Double the backoff time
             }
         }
+    }
+
+    private function logRateLimitHeaders($response)
+    {
+        $headers = $response->getHeaders();
+        $this->logger->info('Imgur Rate Limits', [
+            'ClientLimit' => $headers['X-RateLimit-ClientLimit'][0] ?? 'N/A',
+            'ClientRemaining' => $headers['X-RateLimit-ClientRemaining'][0] ?? 'N/A',
+            'UserLimit' => $headers['X-RateLimit-UserLimit'][0] ?? 'N/A',
+            'UserRemaining' => $headers['X-RateLimit-UserRemaining'][0] ?? 'N/A',
+            'UserReset' => $headers['X-RateLimit-UserReset'][0] ?? 'N/A',
+        ]);
     }
 }

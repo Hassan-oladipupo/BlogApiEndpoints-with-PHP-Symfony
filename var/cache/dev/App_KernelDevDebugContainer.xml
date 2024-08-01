@@ -274,7 +274,7 @@
     <service id="GuzzleHttp\Client" class="GuzzleHttp\Client" autowire="true" autoconfigure="true"/>
     <service id="App\Service\BlogPostFormatter" class="App\Service\BlogPostFormatter" autowire="true" autoconfigure="true"/>
     <service id="App\Service\ImgurService" class="App\Service\ImgurService" autowire="true" autoconfigure="true">
-      <argument type="service" id="http_client"/>
+      <argument type="service" id="GuzzleHttp\Client"/>
       <argument type="service" id="monolog.logger"/>
     </service>
     <service id="App\Entity" class="App\Entity" abstract="true">
