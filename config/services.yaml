@@ -4,6 +4,8 @@ parameters:
 
 
 services:
+    GuzzleHttp\Client:
+        class: GuzzleHttp\Client
     _defaults:
         autowire: true
         autoconfigure: true
