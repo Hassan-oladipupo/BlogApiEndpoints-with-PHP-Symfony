@@ -39,7 +39,12 @@ class ImgurService
                 $this->logRateLimitHeaders($response);
 
                 $content = $response->getBody()->getContents();
+                $this->logger->info('Imgur API response', ['content' => $content]);
                 $data = json_decode($content, true);
+
+                if (is_null($data)) {
+                    throw new \Exception('Invalid response from Imgur API');
+                }
 
                 if (isset($data['success']) && $data['success']) {
                     return [
