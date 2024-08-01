@@ -21,7 +21,7 @@ class ImgurService
     public function uploadImageStream($stream, $retryCount = 3)
     {
         $attempts = 0;
-        $backoff = 1; // Initial backoff in seconds
+        $backoff = 1;
 
         while ($attempts < $retryCount) {
             try {
@@ -35,6 +35,10 @@ class ImgurService
                     ],
                 ]);
 
+                $headers = $response->getHeaders();
+                $clientRemaining = $headers['X-RateLimit-ClientRemaining'][0] ?? 'Unknown';
+                $userRemaining = $headers['X-RateLimit-UserRemaining'][0] ?? 'Unknown';
+
                 $content = $response->getBody()->getContents();
                 $data = json_decode($content, true);
 
@@ -47,6 +51,8 @@ class ImgurService
 
                 $this->logger->error('Imgur upload failed', [
                     'response' => $data,
+                    'clientRemaining' => $clientRemaining,
+                    'userRemaining' => $userRemaining,
                 ]);
 
                 return [
@@ -65,8 +71,21 @@ class ImgurService
                     ];
                 }
 
-                sleep($backoff); // Exponential backoff
-                $backoff *= 2; // Double the backoff time
+                if ($e->getCode() == 429) {
+                    $this->logger->warning('Too many requests, backing off', [
+                        'attempt' => $attempts,
+                        'backoff' => $backoff,
+                        'clientRemaining' => $clientRemaining,
+                        'userRemaining' => $userRemaining,
+                    ]);
+                    sleep($backoff);
+                    $backoff *= 2;
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => 'An unexpected error occurred: ' . $e->getMessage(),
+                    ];
+                }
             }
         }
     }
