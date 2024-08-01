@@ -53,20 +53,33 @@ class ImgurService
                     'success' => false,
                     'message' => $data['data']['error'] ?? 'Unknown error',
                 ];
-            } catch (\Exception $e) {
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                if ($e->getCode() === 429) {
+                    $this->logger->info('Rate limit exceeded, retrying after backoff', [
+                        'attempt' => $attempts,
+                        'backoff' => $backoff,
+                    ]);
+
+                    sleep($backoff);
+                    $backoff *= 2;
+                    $attempts++;
+                    continue;
+                }
+
                 $this->logger->error('An error occurred during Imgur upload', [
                     'exception' => $e,
                 ]);
 
-                if (++$attempts >= $retryCount) {
-                    return [
-                        'success' => false,
-                        'message' => 'An unexpected error occurred: ' . $e->getMessage(),
-                    ];
-                }
-
-                sleep($backoff);
-                $backoff *= 2;
+                return [
+                    'success' => false,
+                    'message' => 'An unexpected error occurred: ' . $e->getMessage(),
+                ];
+            } catch (\Exception $e) {
+                $this->logger->error('Imgur upload failed: ' . $e->getMessage());
+                return [
+                    'success' => false,
+                    'message' => 'Imgur upload failed: ' . $e->getMessage(),
+                ];
             }
         }
     }
