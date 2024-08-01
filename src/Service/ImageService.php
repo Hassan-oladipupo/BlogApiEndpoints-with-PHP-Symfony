@@ -42,7 +42,8 @@ class ImgurService
                 $this->logger->info('Imgur API response', ['content' => $content]);
                 $data = json_decode($content, true);
 
-                if (is_null($data)) {
+                // Check if $data is null or not an array
+                if (!is_array($data)) {
                     throw new \Exception('Invalid response from Imgur API');
                 }
 
