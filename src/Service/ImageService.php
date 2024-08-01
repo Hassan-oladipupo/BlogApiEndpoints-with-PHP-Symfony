@@ -25,12 +25,15 @@ class ImgurService
 
         while ($attempts < $retryCount) {
             try {
+                $imageData = base64_encode(stream_get_contents($stream));
+                $this->logger->info('Uploading image to Imgur', ['image_data_length' => strlen($imageData)]);
+
                 $response = $this->client->request('POST', 'https://api.imgur.com/3/image', [
                     'headers' => [
                         'Authorization' => 'Client-ID ' . $this->clientId,
                     ],
                     'form_params' => [
-                        'image' => base64_encode(stream_get_contents($stream)),
+                        'image' => $imageData,
                         'type' => 'base64',
                     ],
                 ]);
