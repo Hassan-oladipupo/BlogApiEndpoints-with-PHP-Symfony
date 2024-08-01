@@ -36,6 +36,8 @@ class ImgurService
                 ]);
 
                 $content = $response->getBody()->getContents();
+                $this->logger->info('Imgur API response content', ['content' => $content]);
+
                 $data = json_decode($content, true);
 
                 if (is_null($data)) {
