@@ -82,19 +82,23 @@ class ImgurService
                     continue;
                 }
 
-                $this->logger->error('An error occurred during Imgur upload', [
+                $this->logger->error('ClientException during Imgur upload', [
+                    'exception' => $e,
+                    'response_body' => $e->getResponse()->getBody()->getContents() ?? 'No response body',
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'ClientException occurred: ' . $e->getMessage(),
+                ];
+            } catch (\Exception $e) {
+                $this->logger->error('Exception during Imgur upload', [
                     'exception' => $e,
                 ]);
 
                 return [
                     'success' => false,
-                    'message' => 'An unexpected error occurred: ' . $e->getMessage(),
-                ];
-            } catch (\Exception $e) {
-                $this->logger->error('Imgur upload failed: ' . $e->getMessage());
-                return [
-                    'success' => false,
-                    'message' => 'Imgur upload failed: ' . $e->getMessage(),
+                    'message' => 'Exception occurred: ' . $e->getMessage(),
                 ];
             }
         }
