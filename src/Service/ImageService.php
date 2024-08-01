@@ -35,10 +35,6 @@ class ImgurService
                     ],
                 ]);
 
-                $headers = $response->getHeaders();
-                $clientRemaining = $headers['X-RateLimit-ClientRemaining'][0] ?? 'Unknown';
-                $userRemaining = $headers['X-RateLimit-UserRemaining'][0] ?? 'Unknown';
-
                 $content = $response->getBody()->getContents();
                 $data = json_decode($content, true);
 
@@ -51,41 +47,57 @@ class ImgurService
 
                 $this->logger->error('Imgur upload failed', [
                     'response' => $data,
-                    'clientRemaining' => $clientRemaining,
-                    'userRemaining' => $userRemaining,
                 ]);
 
                 return [
                     'success' => false,
                     'message' => $data['data']['error'] ?? 'Unknown error',
                 ];
-            } catch (\Exception $e) {
-                $this->logger->error('An error occurred during Imgur upload', [
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                $this->logger->error('Client error during Imgur upload', [
                     'exception' => $e,
                 ]);
 
-                if (++$attempts >= $retryCount) {
-                    return [
-                        'success' => false,
-                        'message' => 'An unexpected error occurred: ' . $e->getMessage(),
-                    ];
-                }
-
-                if ($e->getCode() == 429) {
-                    $this->logger->warning('Too many requests, backing off', [
+                if ($e->getResponse()->getStatusCode() === 429) {
+                    $this->logger->warning('Rate limit exceeded, backing off', [
                         'attempt' => $attempts,
                         'backoff' => $backoff,
-                        'clientRemaining' => $clientRemaining,
-                        'userRemaining' => $userRemaining,
                     ]);
                     sleep($backoff);
                     $backoff *= 2;
                 } else {
                     return [
                         'success' => false,
-                        'message' => 'An unexpected error occurred: ' . $e->getMessage(),
+                        'message' => 'Client error: ' . $e->getMessage(),
                     ];
                 }
+            } catch (\GuzzleHttp\Exception\ServerException $e) {
+                $this->logger->error('Server error during Imgur upload', [
+                    'exception' => $e,
+                ]);
+
+                if (++$attempts >= $retryCount) {
+                    return [
+                        'success' => false,
+                        'message' => 'Server error: ' . $e->getMessage(),
+                    ];
+                }
+
+                $this->logger->warning('Server error, retrying', [
+                    'attempt' => $attempts,
+                    'backoff' => $backoff,
+                ]);
+                sleep($backoff);
+                $backoff *= 2;
+            } catch (\Exception $e) {
+                $this->logger->error('An unexpected error occurred during Imgur upload', [
+                    'exception' => $e,
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'An unexpected error occurred: ' . $e->getMessage(),
+                ];
             }
         }
     }
