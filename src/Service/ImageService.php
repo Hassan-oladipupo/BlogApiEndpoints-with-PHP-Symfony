@@ -36,7 +36,7 @@ class ImgurService
                     ],
                 ]);
 
-                $this->logRateLimitHeaders($response);
+                //   $this->logRateLimitHeaders($response);
 
                 $content = $response->getBody()->getContents();
                 $this->logger->info('Imgur API response', ['content' => $content]);
@@ -93,17 +93,5 @@ class ImgurService
                 ];
             }
         }
-    }
-
-    private function logRateLimitHeaders($response)
-    {
-        $headers = $response->getHeaders();
-        $this->logger->info('Imgur Rate Limits', [
-            'ClientLimit' => $headers['X-RateLimit-ClientLimit'][0] ?? 'N/A',
-            'ClientRemaining' => $headers['X-RateLimit-ClientRemaining'][0] ?? 'N/A',
-            'UserLimit' => $headers['X-RateLimit-UserLimit'][0] ?? 'N/A',
-            'UserRemaining' => $headers['X-RateLimit-UserRemaining'][0] ?? 'N/A',
-            'UserReset' => $headers['X-RateLimit-UserReset'][0] ?? 'N/A',
-        ]);
     }
 }
