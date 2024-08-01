@@ -4,7 +4,6 @@ namespace App\Service;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
-use GuzzleHttp\Exception\RequestException;
 
 class ImgurService
 {
@@ -22,7 +21,7 @@ class ImgurService
     public function uploadImageStream($stream, $retryCount = 3)
     {
         $attempts = 0;
-        $backoff = 1; // Initial backoff in seconds
+        $backoff = 1;
 
         while ($attempts < $retryCount) {
             try {
@@ -36,16 +35,8 @@ class ImgurService
                     ],
                 ]);
 
-                //   $this->logRateLimitHeaders($response);
-
                 $content = $response->getBody()->getContents();
-                $this->logger->info('Imgur API response', ['content' => $content]);
                 $data = json_decode($content, true);
-
-                // Check if $data is null or not an array
-                if (is_null($data) || !is_array($data)) {
-                    throw new \Exception('Invalid response from Imgur API');
-                }
 
                 if (isset($data['success']) && $data['success']) {
                     return [
@@ -62,22 +53,10 @@ class ImgurService
                     'success' => false,
                     'message' => $data['data']['error'] ?? 'Unknown error',
                 ];
-            } catch (RequestException $e) {
+            } catch (\Exception $e) {
                 $this->logger->error('An error occurred during Imgur upload', [
                     'exception' => $e,
                 ]);
-
-                if ($e->getCode() == 429 && $attempts < $retryCount) {
-                    $this->logger->info('Rate limit hit, retrying after backoff', [
-                        'attempts' => $attempts,
-                        'backoff' => $backoff,
-                    ]);
-
-                    sleep($backoff); // Exponential backoff
-                    $backoff *= 2; // Double the backoff time
-                    $attempts++;
-                    continue;
-                }
 
                 if (++$attempts >= $retryCount) {
                     return [
@@ -85,12 +64,9 @@ class ImgurService
                         'message' => 'An unexpected error occurred: ' . $e->getMessage(),
                     ];
                 }
-            } catch (\Exception $e) {
-                $this->logger->error('Imgur upload failed: ' . $e->getMessage());
-                return [
-                    'success' => false,
-                    'message' => 'Imgur upload failed: ' . $e->getMessage(),
-                ];
+
+                sleep($backoff);
+                $backoff *= 2;
             }
         }
     }
