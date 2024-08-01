@@ -21,7 +21,7 @@ class ImgurService
     public function uploadImageStream($stream, $retryCount = 3)
     {
         $attempts = 0;
-        $backoff = 1;
+        $backoff = 1; // Initial backoff in seconds
 
         while ($attempts < $retryCount) {
             try {
@@ -65,8 +65,8 @@ class ImgurService
                     ];
                 }
 
-                sleep($backoff);
-                $backoff *= 2;
+                sleep($backoff); // Exponential backoff
+                $backoff *= 2; // Double the backoff time
             }
         }
     }

@@ -2,7 +2,6 @@ parameters:
     profiles: '/uploads/profiles/'
     profiles_directory: '%kernel.project_dir%/public%profiles%'
 
-
 services:
     GuzzleHttp\Client:
         class: GuzzleHttp\Client
@@ -13,7 +12,7 @@ services:
     App\Service\BlogPostFormatter: ~    
     App\Service\ImgurService:
         arguments:
-            $client: '@http_client'
+            $client: '@GuzzleHttp\Client'
 
     App\:
         resource: '../src/'
