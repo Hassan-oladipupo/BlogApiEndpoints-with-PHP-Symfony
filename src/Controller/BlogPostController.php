@@ -303,7 +303,6 @@ class BlogPostController extends AbstractController
 
 
 
-    //delete blogpost
     #[Route('/api/blog-post/{id}', name: 'app_blog_post_delete', methods: ['DELETE'])]
     public function deleteBlogPost(int $id, BlogPostRepository $repo, ManagerRegistry $doctrine, LoggerInterface $logger, Security $security): JsonResponse
     {
