@@ -32,8 +32,6 @@ class ProfileSettingController extends AbstractController
         $this->imgurService = $imgurService;
     }
 
-
-
     #[Route('/api/settings/profile-image', name: 'app_settings_profile_image', methods: ['POST'])]
     public function profileImage(Request $request, SluggerInterface $slugger, AppUserRepository $repo, ValidatorInterface $validator): JsonResponse
     {
@@ -71,7 +69,7 @@ class ProfileSettingController extends AbstractController
                 $user = $this->getUser();
 
                 $profile = $user->getUserProfile() ?? new UserProfile();
-                $profile->setImage($uploadResult['data']['link']);
+                $profile->setImage($uploadResult['data']['link'] ?? '');
                 $user->setUserProfile($profile);
 
                 $repo->save($user, true);
@@ -91,6 +89,7 @@ class ProfileSettingController extends AbstractController
             return new JsonResponse(['message' => 'Imgur upload failed: ' . $e->getMessage()], 500);
         }
     }
+
 
 
     #[Route('/api/settings-profile', name: 'app_settings_profile', methods: ['POST'])]

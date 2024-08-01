@@ -43,7 +43,7 @@ class ImgurService
                 $data = json_decode($content, true);
 
                 // Check if $data is null or not an array
-                if (!is_array($data)) {
+                if (is_null($data) || !is_array($data)) {
                     throw new \Exception('Invalid response from Imgur API');
                 }
 
