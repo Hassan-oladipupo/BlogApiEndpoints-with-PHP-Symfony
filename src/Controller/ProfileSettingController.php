@@ -56,20 +56,21 @@ class ProfileSettingController extends AbstractController
             return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
         }
 
+        $stream = fopen($profileImageFile->getPathname(), 'r');
+        if ($stream === false) {
+            return new JsonResponse(['message' => 'Failed to open file stream'], 500);
+        }
+
         try {
             $originalFileName = pathinfo($profileImageFile->getClientOriginalName(), PATHINFO_FILENAME);
             $safeFilename = $slugger->slug($originalFileName);
             $newFileName = $safeFilename . '-' . uniqid() . '.' . $profileImageFile->guessExtension();
 
-            $stream = fopen($profileImageFile->getPathname(), 'r');
-
-            if ($stream === false) {
-                throw new \Exception('Failed to open file stream');
-            }
-
             $uploadResult = $this->imageService->uploadImageStream($stream);
 
-            fclose($stream); // Ensure the stream is closed
+            if (is_resource($stream)) {
+                fclose($stream); // Ensure the stream is closed
+            }
 
             if ($uploadResult['success']) {
                 /** @var AppUser $user */
@@ -86,10 +87,14 @@ class ProfileSettingController extends AbstractController
                 throw new \Exception('Cloudinary upload failed: ' . $uploadResult['message']);
             }
         } catch (\Exception $e) {
+            if (is_resource($stream)) {
+                fclose($stream); // Ensure the stream is closed in case of an exception
+            }
             $this->logger->error('Profile image upload failed: ' . $e->getMessage());
             return new JsonResponse(['message' => 'Profile image upload failed: ' . $e->getMessage()], 500);
         }
     }
+
 
 
 

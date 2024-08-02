@@ -12,11 +12,15 @@ class ImageService
 
     public function __construct(LoggerInterface $logger)
     {
+        $cloudName = "dapgqa7ao";
+        $apiKey = "685653132369916";
+        $apiSecret = "YoVuMZjV-CEZRBK7ecPi46_j_HA";
+
         $this->cloudinary = new Cloudinary([
             'cloud' => [
-                'cloud_name' => getenv('CLOUDINARY_CLOUD_NAME'),
-                'api_key'    => getenv('CLOUDINARY_API_KEY'),
-                'api_secret' => getenv('CLOUDINARY_API_SECRET'),
+                'cloud_name' => $cloudName,
+                'api_key'    => $apiKey,
+                'api_secret' => $apiSecret,
             ],
         ]);
         $this->logger = $logger;

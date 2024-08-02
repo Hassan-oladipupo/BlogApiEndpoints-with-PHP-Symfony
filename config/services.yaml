@@ -3,16 +3,17 @@ parameters:
     profiles_directory: '%kernel.project_dir%/public%profiles%'
 
 services:
-    GuzzleHttp\Client:
-        class: GuzzleHttp\Client
     _defaults:
         autowire: true
         autoconfigure: true
+
+    GuzzleHttp\Client: ~
 
     App\Service\BlogPostFormatter: ~    
     App\Service\ImageService:
         arguments:
             $client: '@GuzzleHttp\Client'
+            $logger: '@logger'
 
     App\:
         resource: '../src/'
