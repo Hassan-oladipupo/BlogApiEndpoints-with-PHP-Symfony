@@ -156,15 +156,21 @@ class BlogPostController extends AbstractController
                     throw new \Exception('Failed to open file stream');
                 }
                 $uploadResult = $imageService->uploadImageStream($stream);
+
                 if ($uploadResult['success']) {
-                    $blogPost->setBlogImage($uploadResult['data']['link']);
+                    if (isset($uploadResult['data']['link'])) {
+                        $blogPost->setBlogImage($uploadResult['data']['link']);
+                    } else {
+                        throw new \Exception('Image upload succeeded but no link was provided.');
+                    }
                 } else {
-                    throw new \Exception('Image upload failed: ' . $uploadResult['message']);
+                    throw new \Exception('Image upload failed: ' . ($uploadResult['message'] ?? 'Unknown error'));
                 }
             } catch (\Exception $e) {
                 $logger->error('Image upload failed: ' . $e->getMessage());
                 return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
             } finally {
+
                 if ($stream && is_resource($stream)) {
                     fclose($stream);
                 }
@@ -181,7 +187,6 @@ class BlogPostController extends AbstractController
             'blogPost' => $blogPost
         ], 201, [], ['groups' => 'blogpost']);
     }
-
 
 
 
@@ -240,10 +245,15 @@ class BlogPostController extends AbstractController
                         throw new \Exception('Failed to open file stream');
                     }
                     $uploadResult = $imageService->uploadImageStream($stream);
+
                     if ($uploadResult['success']) {
-                        $editBlog->setBlogImage($uploadResult['data']['link']);
+                        if (isset($uploadResult['data']['link'])) {
+                            $editBlog->setBlogImage($uploadResult['data']['link']);
+                        } else {
+                            throw new \Exception('Image upload succeeded but no link was provided.');
+                        }
                     } else {
-                        throw new \Exception('Image upload failed: ' . $uploadResult['message']);
+                        throw new \Exception('Image upload failed: ' . ($uploadResult['message'] ?? 'Unknown error'));
                     }
                 } catch (\Exception $e) {
                     $logger->error('Image upload failed: ' . $e->getMessage());
