@@ -69,7 +69,7 @@ class ProfileSettingController extends AbstractController
             $uploadResult = $this->imageService->uploadImageStream($stream);
 
             if (is_resource($stream)) {
-                fclose($stream); // Ensure the stream is closed
+                fclose($stream);
             }
 
             if ($uploadResult['success']) {
@@ -88,7 +88,7 @@ class ProfileSettingController extends AbstractController
             }
         } catch (\Exception $e) {
             if (is_resource($stream)) {
-                fclose($stream); // Ensure the stream is closed in case of an exception
+                fclose($stream);
             }
             $this->logger->error('Profile image upload failed: ' . $e->getMessage());
             return new JsonResponse(['message' => 'Profile image upload failed: ' . $e->getMessage()], 500);

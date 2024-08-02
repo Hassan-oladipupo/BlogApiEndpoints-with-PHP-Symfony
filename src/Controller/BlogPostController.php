@@ -149,14 +149,13 @@ class BlogPostController extends AbstractController
                 return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
             }
 
+            $stream = null;
             try {
                 $stream = fopen($blogImage->getPathname(), 'r');
                 if ($stream === false) {
                     throw new \Exception('Failed to open file stream');
                 }
                 $uploadResult = $imageService->uploadImageStream($stream);
-                fclose($stream);
-
                 if ($uploadResult['success']) {
                     $blogPost->setBlogImage($uploadResult['data']['link']);
                 } else {
@@ -165,6 +164,10 @@ class BlogPostController extends AbstractController
             } catch (\Exception $e) {
                 $logger->error('Image upload failed: ' . $e->getMessage());
                 return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
+            } finally {
+                if ($stream && is_resource($stream)) {
+                    fclose($stream);
+                }
             }
         } else {
             $blogPost->setBlogImage(null);
@@ -230,14 +233,13 @@ class BlogPostController extends AbstractController
                     return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
                 }
 
+                $stream = null;
                 try {
                     $stream = fopen($blogImage->getPathname(), 'r');
                     if ($stream === false) {
                         throw new \Exception('Failed to open file stream');
                     }
                     $uploadResult = $imageService->uploadImageStream($stream);
-                    fclose($stream);
-
                     if ($uploadResult['success']) {
                         $editBlog->setBlogImage($uploadResult['data']['link']);
                     } else {
@@ -245,7 +247,11 @@ class BlogPostController extends AbstractController
                     }
                 } catch (\Exception $e) {
                     $logger->error('Image upload failed: ' . $e->getMessage());
-                    return $this->json(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
+                    return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
+                } finally {
+                    if ($stream && is_resource($stream)) {
+                        fclose($stream);
+                    }
                 }
             }
 
@@ -261,6 +267,7 @@ class BlogPostController extends AbstractController
             return $this->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
 
     #[Route('/api/blog-post/{blog}/comment', name: 'app_blog_post_comment', methods: ['POST'])]
     public function addComment(BlogPost $blog, Request $request, CommentRepository $repo, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
