@@ -10,7 +10,7 @@ services:
         autoconfigure: true
 
     App\Service\BlogPostFormatter: ~    
-    App\Service\ImgurService:
+    App\Service\ImageService:
         arguments:
             $client: '@GuzzleHttp\Client'
 

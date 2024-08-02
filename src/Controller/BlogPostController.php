@@ -6,6 +6,7 @@ use App\Entity\AppUser;
 use App\Entity\Comment;
 use App\Entity\BlogPost;
 use Psr\Log\LoggerInterface;
+use App\Service\ImageService;
 use App\Service\ImgurService;
 use App\Service\BlogPostFormatter;
 use App\Repository\CommentRepository;
@@ -29,13 +30,13 @@ class BlogPostController extends AbstractController
 {
     private LoggerInterface $logger;
     private BlogPostFormatter $blogPostFormatter;
-    private ImgurService $imgurService;
+    private ImageService $imageService;
 
-    public function __construct(LoggerInterface $logger, BlogPostFormatter $blogPostFormatter, ImgurService $imgurService)
+    public function __construct(LoggerInterface $logger, BlogPostFormatter $blogPostFormatter, ImageService $imageService)
     {
         $this->logger = $logger;
         $this->blogPostFormatter = $blogPostFormatter;
-        $this->imgurService = $imgurService;
+        $this->imageService = $imageService;
     }
 
     #[Route('/api/blog/post', name: 'app_blog_post', methods: ['GET'])]
@@ -112,7 +113,7 @@ class BlogPostController extends AbstractController
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         LoggerInterface $logger,
-        ImgurService $imgurService
+        ImageService $imageService
     ): JsonResponse {
         try {
             /** @var AppUser $currentUser */
@@ -152,7 +153,7 @@ class BlogPostController extends AbstractController
 
                 try {
                     $stream = fopen($blogImage->getPathname(), 'r');
-                    $uploadResult = $imgurService->uploadImageStream($stream);
+                    $uploadResult = $imageService->uploadImageStream($stream);
                     fclose($stream);
 
                     if ($uploadResult['success']) {
@@ -195,7 +196,7 @@ class BlogPostController extends AbstractController
         ValidatorInterface $validator,
         LoggerInterface $logger,
         Security $security,
-        ImgurService $imgurService
+        ImageService $imageService
     ): JsonResponse {
         $currentUser = $security->getUser();
 
@@ -238,7 +239,7 @@ class BlogPostController extends AbstractController
 
                 try {
                     $stream = fopen($blogImage->getPathname(), 'r');
-                    $uploadResult = $imgurService->uploadImageStream($stream);
+                    $uploadResult = $imageService->uploadImageStream($stream);
                     fclose($stream);
 
                     $logger->info('Imgur upload result: ' . json_encode($uploadResult));

@@ -4,32 +4,33 @@ namespace App\Controller;
 
 use App\Entity\AppUser;
 use App\Entity\UserProfile;
-use App\Repository\AppUserRepository;
-use App\Service\ImgurService;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Validator\Constraints\File;
+use App\Service\ImageService;
+use App\Service\ImgurService;
+use App\Repository\AppUserRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class ProfileSettingController extends AbstractController
 {
     private $logger;
-    private $imgurService;
+    private $imageService;
 
-    public function __construct(LoggerInterface $logger, ImgurService $imgurService)
+    public function __construct(LoggerInterface $logger, ImageService $imageService)
     {
         $this->logger = $logger;
-        $this->imgurService = $imgurService;
+        $this->imageService = $imageService;
     }
 
     #[Route('/api/settings/profile-image', name: 'app_settings_profile_image', methods: ['POST'])]
@@ -62,7 +63,7 @@ class ProfileSettingController extends AbstractController
 
             $stream = fopen($profileImageFile->getPathname(), 'r');
 
-            $uploadResult = $this->imgurService->uploadImageStream($stream);
+            $uploadResult = $this->imageService->uploadImageStream($stream);
 
             if ($uploadResult['success']) {
                 /** @var AppUser $user */
