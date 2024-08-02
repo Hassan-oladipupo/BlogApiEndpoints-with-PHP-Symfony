@@ -135,6 +135,7 @@ class BlogPostController extends AbstractController
 
         /** @var UploadedFile|null $blogImage */
         $blogImage = $request->files->get('blogImage');
+
         if ($blogImage instanceof UploadedFile) {
             $constraints = [
                 new File([
@@ -149,31 +150,29 @@ class BlogPostController extends AbstractController
                 return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
             }
 
-            $stream = null;
+            $stream = fopen($blogImage->getPathname(), 'r');
+            if ($stream === false) {
+                return new JsonResponse(['message' => 'Failed to open file stream'], 500);
+            }
+
             try {
-                $stream = fopen($blogImage->getPathname(), 'r');
-                if ($stream === false) {
-                    throw new \Exception('Failed to open file stream');
-                }
                 $uploadResult = $imageService->uploadImageStream($stream);
 
-                if ($uploadResult['success']) {
-                    if (isset($uploadResult['data']['link'])) {
-                        $blogPost->setBlogImage($uploadResult['data']['link']);
-                    } else {
-                        throw new \Exception('Image upload succeeded but no link was provided.');
-                    }
-                } else {
-                    throw new \Exception('Image upload failed: ' . ($uploadResult['message'] ?? 'Unknown error'));
-                }
-            } catch (\Exception $e) {
-                $logger->error('Image upload failed: ' . $e->getMessage());
-                return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
-            } finally {
-
-                if ($stream && is_resource($stream)) {
+                if (is_resource($stream)) {
                     fclose($stream);
                 }
+
+                if ($uploadResult['success']) {
+                    $blogPost->setBlogImage($uploadResult['data']['secure_url'] ?? '');
+                } else {
+                    throw new \Exception('Image upload failed: ' . $uploadResult['message']);
+                }
+            } catch (\Exception $e) {
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+                $logger->error('Image upload failed: ' . $e->getMessage());
+                return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
             }
         } else {
             $blogPost->setBlogImage(null);
@@ -238,30 +237,29 @@ class BlogPostController extends AbstractController
                     return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
                 }
 
-                $stream = null;
+                $stream = fopen($blogImage->getPathname(), 'r');
+                if ($stream === false) {
+                    return new JsonResponse(['message' => 'Failed to open file stream'], 500);
+                }
+
                 try {
-                    $stream = fopen($blogImage->getPathname(), 'r');
-                    if ($stream === false) {
-                        throw new \Exception('Failed to open file stream');
-                    }
                     $uploadResult = $imageService->uploadImageStream($stream);
 
-                    if ($uploadResult['success']) {
-                        if (isset($uploadResult['data']['link'])) {
-                            $editBlog->setBlogImage($uploadResult['data']['link']);
-                        } else {
-                            throw new \Exception('Image upload succeeded but no link was provided.');
-                        }
-                    } else {
-                        throw new \Exception('Image upload failed: ' . ($uploadResult['message'] ?? 'Unknown error'));
-                    }
-                } catch (\Exception $e) {
-                    $logger->error('Image upload failed: ' . $e->getMessage());
-                    return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
-                } finally {
-                    if ($stream && is_resource($stream)) {
+                    if (is_resource($stream)) {
                         fclose($stream);
                     }
+
+                    if ($uploadResult['success']) {
+                        $editBlog->setBlogImage($uploadResult['data']['secure_url'] ?? '');
+                    } else {
+                        throw new \Exception('Image upload failed: ' . $uploadResult['message']);
+                    }
+                } catch (\Exception $e) {
+                    if (is_resource($stream)) {
+                        fclose($stream);
+                    }
+                    $logger->error('Image upload failed: ' . $e->getMessage());
+                    return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
                 }
             }
 
