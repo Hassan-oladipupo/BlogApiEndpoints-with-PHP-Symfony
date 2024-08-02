@@ -115,75 +115,70 @@ class BlogPostController extends AbstractController
         LoggerInterface $logger,
         ImageService $imageService
     ): JsonResponse {
-        try {
-            /** @var AppUser $currentUser */
-            $currentUser = $this->getUser();
-            if (!$currentUser) {
-                return $this->json(['message' => 'Only logged-in users can add a post.'], 400);
-            }
-
-            $data = $request->request->all();
-            $blogPost = $serializer->deserialize(json_encode($data), BlogPost::class, 'json', ['groups' => 'blogpost']);
-
-            $errors = $validator->validate($blogPost);
-            if (count($errors) > 0) {
-                $errorMessages = [];
-                /** @var \Symfony\Component\Validator\ConstraintViolation $error */
-                foreach ($errors as $error) {
-                    $errorMessages[] = $error->getMessage();
-                }
-                return $this->json(['errors' => $errorMessages], 422);
-            }
-
-            /** @var UploadedFile|null $blogImage */
-            $blogImage = $request->files->get('blogImage');
-            if ($blogImage instanceof UploadedFile) {
-                $constraints = [
-                    new File([
-                        'maxSize' => '1024k',
-                        'mimeTypes' => ['image/jpeg', 'image/png'],
-                        'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
-                    ]),
-                ];
-
-                $violations = $validator->validate($blogImage, $constraints);
-                if (count($violations) > 0) {
-                    return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
-                }
-
-                try {
-                    $stream = fopen($blogImage->getPathname(), 'r');
-                    $uploadResult = $imageService->uploadImageStream($stream);
-                    fclose($stream);
-
-                    if ($uploadResult['success']) {
-                        $blogPost->setBlogImage($uploadResult['data']['link']);
-                    } else {
-                        throw new \Exception('Imgur upload failed: ' . $uploadResult['message']);
-                    }
-                } catch (FileException $e) {
-                    $logger->error('File upload failed: ' . $e->getMessage());
-                    return new JsonResponse(['message' => 'File upload failed: ' . $e->getMessage()], 500);
-                } catch (\Exception $e) {
-                    $logger->error('Imgur upload failed: ' . $e->getMessage());
-                    return new JsonResponse(['message' => 'Imgur upload failed: ' . $e->getMessage()], 500);
-                }
-            } else {
-                $blogPost->setBlogImage(null);
-            }
-
-            $blogPost->setAuthor($currentUser);
-            $repo->save($blogPost, true);
-
-            return $this->json([
-                'message' => "Blog added successfully",
-                'blogPost' => $blogPost
-            ], 201, [], ['groups' => 'blogpost']);
-        } catch (\Exception $e) {
-            $logger->error('An error occurred: ' . $e->getMessage());
-            return $this->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        /** @var AppUser $currentUser */
+        $currentUser = $this->getUser();
+        if (!$currentUser) {
+            return $this->json(['message' => 'Only logged-in users can add a post.'], 400);
         }
+
+        $data = $request->request->all();
+        $blogPost = $serializer->deserialize(json_encode($data), BlogPost::class, 'json', ['groups' => 'blogpost']);
+
+        $errors = $validator->validate($blogPost);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = $error->getMessage();
+            }
+            return $this->json(['errors' => $errorMessages], 422);
+        }
+
+        /** @var UploadedFile|null $blogImage */
+        $blogImage = $request->files->get('blogImage');
+        if ($blogImage instanceof UploadedFile) {
+            $constraints = [
+                new File([
+                    'maxSize' => '1024k',
+                    'mimeTypes' => ['image/jpeg', 'image/png'],
+                    'mimeTypesMessage' => 'Please upload a valid PNG/JPEG image',
+                ]),
+            ];
+
+            $violations = $validator->validate($blogImage, $constraints);
+            if (count($violations) > 0) {
+                return new JsonResponse(['message' => $violations[0]->getMessage()], 400);
+            }
+
+            try {
+                $stream = fopen($blogImage->getPathname(), 'r');
+                if ($stream === false) {
+                    throw new \Exception('Failed to open file stream');
+                }
+                $uploadResult = $imageService->uploadImageStream($stream);
+                fclose($stream);
+
+                if ($uploadResult['success']) {
+                    $blogPost->setBlogImage($uploadResult['data']['link']);
+                } else {
+                    throw new \Exception('Image upload failed: ' . $uploadResult['message']);
+                }
+            } catch (\Exception $e) {
+                $logger->error('Image upload failed: ' . $e->getMessage());
+                return new JsonResponse(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
+            }
+        } else {
+            $blogPost->setBlogImage(null);
+        }
+
+        $blogPost->setAuthor($currentUser);
+        $repo->save($blogPost, true);
+
+        return $this->json([
+            'message' => "Blog added successfully",
+            'blogPost' => $blogPost
+        ], 201, [], ['groups' => 'blogpost']);
     }
+
 
 
 
@@ -199,7 +194,6 @@ class BlogPostController extends AbstractController
         ImageService $imageService
     ): JsonResponse {
         $currentUser = $security->getUser();
-
         if ($blog->getAuthor() !== $currentUser) {
             return $this->json(['message' => 'You do not have permission to edit this blog post.'], 403);
         }
@@ -211,7 +205,6 @@ class BlogPostController extends AbstractController
             $editBlog = $serializer->deserialize(json_encode($jsonData), BlogPost::class, 'json', [
                 AbstractNormalizer::OBJECT_TO_POPULATE => $blog
             ]);
-
 
             $errors = $validator->validate($editBlog);
             if (count($errors) > 0) {
@@ -239,19 +232,20 @@ class BlogPostController extends AbstractController
 
                 try {
                     $stream = fopen($blogImage->getPathname(), 'r');
+                    if ($stream === false) {
+                        throw new \Exception('Failed to open file stream');
+                    }
                     $uploadResult = $imageService->uploadImageStream($stream);
                     fclose($stream);
-
-                    $logger->info('Imgur upload result: ' . json_encode($uploadResult));
 
                     if ($uploadResult['success']) {
                         $editBlog->setBlogImage($uploadResult['data']['link']);
                     } else {
-                        throw new \Exception('Imgur upload failed: ' . $uploadResult['message']);
+                        throw new \Exception('Image upload failed: ' . $uploadResult['message']);
                     }
-                } catch (FileException $e) {
-                    $logger->error('File upload failed: ' . $e->getMessage());
-                    return $this->json(['message' => 'File upload failed: ' . $e->getMessage()], 500);
+                } catch (\Exception $e) {
+                    $logger->error('Image upload failed: ' . $e->getMessage());
+                    return $this->json(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
                 }
             }
 
