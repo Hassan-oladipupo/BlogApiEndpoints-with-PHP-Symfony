@@ -24,13 +24,13 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class ProfileSettingController extends AbstractController
 {
-    private $logger;
     private $imageService;
+    private $logger;
 
-    public function __construct(LoggerInterface $logger, ImageService $imageService)
+    public function __construct(ImageService $imageService, LoggerInterface $logger)
     {
-        $this->logger = $logger;
         $this->imageService = $imageService;
+        $this->logger = $logger;
     }
 
     #[Route('/api/settings/profile-image', name: 'app_settings_profile_image', methods: ['POST'])]
@@ -63,31 +63,31 @@ class ProfileSettingController extends AbstractController
 
             $stream = fopen($profileImageFile->getPathname(), 'r');
 
+            if ($stream === false) {
+                throw new \Exception('Failed to open file stream');
+            }
+
             $uploadResult = $this->imageService->uploadImageStream($stream);
+
+            fclose($stream); // Ensure the stream is closed
 
             if ($uploadResult['success']) {
                 /** @var AppUser $user */
                 $user = $this->getUser();
 
                 $profile = $user->getUserProfile() ?? new UserProfile();
-                $profile->setImage($uploadResult['data']['link'] ?? '');
+                $profile->setImage($uploadResult['data']['secure_url'] ?? '');
                 $user->setUserProfile($profile);
 
                 $repo->save($user, true);
 
-                fclose($stream);
-
                 return new JsonResponse(['message' => 'Your profile image was updated']);
             } else {
-                fclose($stream);
-                throw new \Exception('Imgur upload failed: ' . $uploadResult['message']);
+                throw new \Exception('Cloudinary upload failed: ' . $uploadResult['message']);
             }
-        } catch (FileException $e) {
-            $this->logger->error('Failed to upload profile image: ' . $e->getMessage());
-            return new JsonResponse(['message' => 'Failed to upload profile image.'], 500);
         } catch (\Exception $e) {
-            $this->logger->error('Imgur upload failed: ' . $e->getMessage());
-            return new JsonResponse(['message' => 'Imgur upload failed: ' . $e->getMessage()], 500);
+            $this->logger->error('Profile image upload failed: ' . $e->getMessage());
+            return new JsonResponse(['message' => 'Profile image upload failed: ' . $e->getMessage()], 500);
         }
     }
 

@@ -315,8 +315,8 @@
     <service id="App\Controller\ProfileSettingController" class="App\Controller\ProfileSettingController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
-      <argument type="service" id="monolog.logger"/>
       <argument type="service" id="App\Service\ImageService"/>
+      <argument type="service" id="monolog.logger"/>
       <call method="setContainer">
         <argument type="service" id=".service_locator.CshazM0.App\Controller\ProfileSettingController"/>
       </call>
