@@ -188,12 +188,11 @@ class BlogPostController extends AbstractController
     }
 
 
-
     #[Route('/api/blog-post/{blog}/edit', name: 'app_blog_post_edit', methods: ['PUT'])]
     public function editBlog(
         BlogPost $blog,
         Request $request,
-        EntityManagerInterface $entityManager,
+        BlogPostRepository $repo,
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         LoggerInterface $logger,
@@ -205,11 +204,12 @@ class BlogPostController extends AbstractController
             return $this->json(['message' => 'You do not have permission to edit this blog post.'], 403);
         }
 
-        $jsonData = $request->request->all();
+        $formData = $request->request->all();
         $blogImage = $request->files->get('blogImage');
 
+
         try {
-            $editBlog = $serializer->deserialize(json_encode($jsonData), BlogPost::class, 'json', [
+            $editBlog = $serializer->deserialize(json_encode($formData), BlogPost::class, 'json', [
                 AbstractNormalizer::OBJECT_TO_POPULATE => $blog
             ]);
 
@@ -243,12 +243,15 @@ class BlogPostController extends AbstractController
                 }
 
                 try {
+                    // Upload the image stream using the ImageService
                     $uploadResult = $imageService->uploadImageStream($stream);
 
+                    // Close the stream if it's open
                     if (is_resource($stream)) {
                         fclose($stream);
                     }
 
+                    // Check if the upload was successful and update the blog image
                     if ($uploadResult['success']) {
                         $editBlog->setBlogImage($uploadResult['data']['secure_url'] ?? '');
                     } else {
@@ -263,9 +266,10 @@ class BlogPostController extends AbstractController
                 }
             }
 
-            $entityManager->persist($editBlog);
-            $entityManager->flush();
+            // Save the updated BlogPost object to the repository
+            $repo->save($editBlog);
 
+            // Return a success response
             return $this->json([
                 'message' => "Blog edited successfully",
                 'blogPost' => $editBlog
