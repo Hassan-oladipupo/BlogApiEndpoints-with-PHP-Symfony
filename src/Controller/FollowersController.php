@@ -2,12 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Entity\AppUser;
 use Psr\Log\LoggerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +17,6 @@ class FollowersController extends AbstractController
     {
         $this->logger = $logger;
     }
-    //Follow User
     #[Route('/api/Follow/{id}', name: 'app_Follow', methods: ['POST'])]
     public function follow(AppUser $userToFollow, ManagerRegistry $doctrine, Request $request): JsonResponse
     {

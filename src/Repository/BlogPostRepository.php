@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\User;
 use App\Entity\AppUser;
 use Doctrine\ORM\Query;
 use App\Entity\BlogPost;
@@ -45,7 +44,6 @@ class BlogPostRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-    //Db query to fetch post with comment 
     public function findAllWithComments(): array
     {
         return $this->findAllQuery(
@@ -55,7 +53,6 @@ class BlogPostRepository extends ServiceEntityRepository
     }
 
 
-    //Db query to fetch post with Author
     public function findAllByAuthor(int | AppUser $author): array
     {
         return $this->findAllQuery(
@@ -71,7 +68,6 @@ class BlogPostRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    //Db query to fetch post of the people a user follow
     public function findAllByAuthors(
         Collection|array $authors
     ): array {
@@ -89,7 +85,6 @@ class BlogPostRepository extends ServiceEntityRepository
     }
 
 
-    //Db query to fetch post with At least minimum of  two likes
     public function findAllWithMinLikes(int $minLikes): array
     {
         $idList = $this->findAllQuery(
@@ -102,7 +97,6 @@ class BlogPostRepository extends ServiceEntityRepository
             ->getResult(Query::HYDRATE_SCALAR_COLUMN);
 
         return $this->findAllQuery(
-            //withComments: true,
             withLikes: true,
             withAuthors: true,
             withProfiles: true
@@ -114,7 +108,6 @@ class BlogPostRepository extends ServiceEntityRepository
 
 
 
-    //Db query to fetch the post together  with comment, authors, user, profiles and likes
 
     private function findAllQuery(
         bool $withComments = false,

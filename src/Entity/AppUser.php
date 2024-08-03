@@ -178,7 +178,6 @@ class AppUser implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setUserProfile(UserProfile $userProfile): static
     {
-        // set the owning side of the relation if necessary
         if ($userProfile->getUser() !== $this) {
             $userProfile->setUser($this);
         }

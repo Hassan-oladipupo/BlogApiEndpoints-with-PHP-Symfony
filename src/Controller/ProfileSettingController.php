@@ -6,7 +6,6 @@ use App\Entity\AppUser;
 use App\Entity\UserProfile;
 use Psr\Log\LoggerInterface;
 use App\Service\ImageService;
-use App\Service\ImgurService;
 use App\Repository\AppUserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,8 +18,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class ProfileSettingController extends AbstractController
 {

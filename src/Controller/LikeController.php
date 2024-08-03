@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class LikeController extends AbstractController
 {
-    //Like post
     #[Route('api/like/{id}', name: 'app_like', methods: ['POST'])]
     public function like(BlogPost $blog, BlogPostRepository $repo, Request $request): JsonResponse
     {
@@ -35,7 +34,6 @@ class LikeController extends AbstractController
     }
 
 
-    //Unlike Post
     #[Route('/api/unlike/{id}', name: 'app_unlike', methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function unlike(BlogPost $blog, BlogPostRepository $repo, Request $request): JsonResponse

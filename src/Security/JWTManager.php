@@ -2,7 +2,6 @@
 
 namespace App\Security;
 
-use App\Entity\User;
 use App\Entity\AppUser;
 use Lexik\Bundle\JWTAuthenticationBundle\Events;
 use Symfony\Component\Security\Core\User\UserInterface;
