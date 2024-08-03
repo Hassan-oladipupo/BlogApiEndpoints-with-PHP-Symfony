@@ -11,6 +11,7 @@ use App\Service\ImgurService;
 use App\Service\BlogPostFormatter;
 use App\Repository\CommentRepository;
 use App\Repository\BlogPostRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -196,6 +197,7 @@ class BlogPostController extends AbstractController
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         LoggerInterface $logger,
+        EntityManagerInterface  $entityManager,
         Security $security,
         ImageService $imageService
     ): JsonResponse {
@@ -243,15 +245,12 @@ class BlogPostController extends AbstractController
                 }
 
                 try {
-                    // Upload the image stream using the ImageService
                     $uploadResult = $imageService->uploadImageStream($stream);
 
-                    // Close the stream if it's open
                     if (is_resource($stream)) {
                         fclose($stream);
                     }
 
-                    // Check if the upload was successful and update the blog image
                     if ($uploadResult['success']) {
                         $editBlog->setBlogImage($uploadResult['data']['secure_url'] ?? '');
                     } else {
@@ -266,10 +265,9 @@ class BlogPostController extends AbstractController
                 }
             }
 
-            // Save the updated BlogPost object to the repository
-            $repo->save($editBlog);
+            $entityManager->persist($editBlog);
+            $entityManager->flush();
 
-            // Return a success response
             return $this->json([
                 'message' => "Blog edited successfully",
                 'blogPost' => $editBlog
